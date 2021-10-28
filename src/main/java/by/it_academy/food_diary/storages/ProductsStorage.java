@@ -1,10 +1,13 @@
-package by.it_academy.foodDiary.storages;
+package by.it_academy.food_diary.storages;
 
-import by.it_academy.foodDiary.models.Product;
+import by.it_academy.food_diary.models.Product;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class ProductsStorage {
 
     private static ProductsStorage instance;
@@ -17,8 +20,9 @@ public class ProductsStorage {
         return products;
     }
 
-    public void add (Product product){
+    public int add (Product product){
         products.add(product);
+        return products.size();
     }
 
     public Product getById (int id){

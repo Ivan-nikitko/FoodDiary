@@ -1,4 +1,4 @@
-package by.it_academy.foodDiary.controller;
+package by.it_academy.food_diary.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +25,7 @@ public class TestController {
     public List<String> get(){
         List<String> names = new ArrayList<>();
         try (Connection connection = this.dataSource.getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement("SELECT first_name FROM test2.employee")) {
+            try (PreparedStatement ps = connection.prepareStatement("SELECT first_name FROM application.employees")) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while(rs.next()){
                         names.add(rs.getString(1));

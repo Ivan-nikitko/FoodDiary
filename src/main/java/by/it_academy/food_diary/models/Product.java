@@ -1,4 +1,4 @@
-package by.it_academy.foodDiary.models;
+package by.it_academy.food_diary.models;
 
 public class Product {
 

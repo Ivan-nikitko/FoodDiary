@@ -1,4 +1,4 @@
-package by.it_academy.foodDiary;
+package by.it_academy.food_diary;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
