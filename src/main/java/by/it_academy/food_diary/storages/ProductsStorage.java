@@ -10,26 +10,31 @@ import java.util.List;
 @Component
 public class ProductsStorage {
 
-    private static ProductsStorage instance;
     private static ArrayList<Product> products;
 
-    private ProductsStorage() {
+    public ProductsStorage() {
+        products = new ArrayList<Product>();
     }
 
     public List<Product> getAll() {
         return products;
     }
 
-    public int add (Product product){
+    public int add(Product product) {
         products.add(product);
         return products.size();
     }
 
-    public Product getById (int id){
+    public Product getById(int id) {
         return products.get(id);
     }
 
-    public static ProductsStorage getInstance() {
-        return instance;
+    public Boolean delete(int id) {
+        try {
+            products.remove(id);
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            return false;
+        }
     }
 }

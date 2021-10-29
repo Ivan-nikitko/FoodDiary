@@ -8,4 +8,6 @@ public interface IProductDAO {
     int add (Product product);
     List<Product> getAll ();
     Product getById (int id);
+    Product update(Product updatedProduct, int id);
+    Boolean delete (int id);
 }

@@ -14,20 +14,35 @@ public class ProductDAO implements IProductDAO {
 
     private final ProductsStorage productsStorage;
 
-    public ProductDAO() {
-        this.productsStorage = ProductsStorage.getInstance();
+    public ProductDAO(ProductsStorage productsStorage) {
+        this.productsStorage = productsStorage;
     }
 
-    public int add (Product product){
+    public int add(Product product) {
         int id = productsStorage.add(product);
         return id;
     }
 
-    public List<Product> getAll (){
+    public List<Product> getAll() {
         return productsStorage.getAll();
     }
 
-    public Product getById (int id){
+    public Product getById(int id) {
         return productsStorage.getById(id);
     }
+
+    public Product update(Product updatedProduct, int id) {
+        Product productToUpdate = productsStorage.getById(id);
+        productToUpdate.setName(updatedProduct.getName());
+        productToUpdate.setBrand(updatedProduct.getBrand());
+        productToUpdate.setCalories(updatedProduct.getCalories());
+        productToUpdate.setProtein(updatedProduct.getProtein());
+        return productToUpdate;
+    }
+
+    @Override
+    public Boolean delete(int id) {
+       return productsStorage.delete(id);
+    }
+
 }
