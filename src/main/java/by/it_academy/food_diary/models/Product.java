@@ -1,15 +1,31 @@
 package by.it_academy.food_diary.models;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
 public class Product {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column
     private String name;
+    @Column
     private String brand;
+    @Column
     private double calories;
+    @Column
     private double protein;
+    @Column
     private double fats;
+    @Column
     private double carbonates;
+    @Column
     private double measure;
+    @ManyToMany
+    @JoinColumn(name = "recipes_id")
+    private List<Recipe> recipes;
 
     public long getId() {
         return id;
