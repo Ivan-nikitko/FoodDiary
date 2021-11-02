@@ -1,8 +1,8 @@
 package by.it_academy.food_diary.models;
 
 import javax.persistence.*;
-import java.util.List;
 
+@Table(name = "Product")
 @Entity
 public class Product {
 
@@ -23,9 +23,7 @@ public class Product {
     private double carbonates;
     @Column
     private double measure;
-    @ManyToMany
-    @JoinColumn(name = "recipes_id")
-    private List<Recipe> recipes;
+
 
     public long getId() {
         return id;
@@ -89,4 +87,6 @@ public class Product {
     public void setMeasure(double measure) {
         this.measure = measure;
     }
+
+
 }

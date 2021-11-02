@@ -27,7 +27,9 @@ public class ProductService implements IProductService {
     }
 
     public Product get(Long id) {
-        return productDAO.findById(id).get();
+        return productDAO.findById(id).orElseThrow(
+                        () -> new IllegalArgumentException("Person по id не найден")
+                );
     }
 
     public void update(Product updatedProduct, Long id) {

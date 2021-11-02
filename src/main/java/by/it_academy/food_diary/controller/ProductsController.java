@@ -26,15 +26,19 @@ public class ProductsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> show(@PathVariable("id") Long id) {
-        Product product = productService.get(id);
-        return new ResponseEntity<>(product, HttpStatus.OK);
+    public ResponseEntity<?> show(@PathVariable("id") Long id) {
+        try {
+            Product product = productService.get(id);
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Product product) {
         productService.save(product);
-        return new ResponseEntity<>( HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/update")
