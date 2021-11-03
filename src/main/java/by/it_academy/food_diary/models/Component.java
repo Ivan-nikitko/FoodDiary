@@ -2,22 +2,19 @@ package by.it_academy.food_diary.models;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
-
 
 @Entity
-public class Recipe {
+public class Component {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    private String name;
-
-
     @OneToOne
-    private User userCreator;
+    private Recipe recipe;
+    @OneToOne
+    private Product product;
+    private Double measure;
+
 
     private Date creationDate;
     private Date updateDate;
-
 }
