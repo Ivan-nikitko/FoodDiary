@@ -3,6 +3,7 @@ package by.it_academy.food_diary.controller;
 import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.service.ProductService;
 import by.it_academy.food_diary.service.api.IProductService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,11 @@ public class ProductsController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
-        productService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            productService.delete(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (EmptyResultDataAccessException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

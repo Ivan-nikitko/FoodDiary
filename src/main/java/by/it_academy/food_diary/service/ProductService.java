@@ -4,6 +4,7 @@ package by.it_academy.food_diary.service;
 import by.it_academy.food_diary.dao.api.IProductDao;
 import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.service.api.IProductService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +31,8 @@ public class ProductService implements IProductService {
 
     public Product get(Long id) {
         return productDAO.findById(id).orElseThrow(
-                        () -> new IllegalArgumentException("Product not found")
-                );
+                () -> new IllegalArgumentException("Product not found")
+        );
     }
 
     public void update(Product updatedProduct, Long id) {
@@ -46,7 +47,7 @@ public class ProductService implements IProductService {
         productDAO.saveAndFlush(productToUpdate);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id) throws EmptyResultDataAccessException {
         productDAO.deleteById(id);
     }
 
