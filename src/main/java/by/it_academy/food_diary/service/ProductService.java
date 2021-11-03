@@ -4,6 +4,7 @@ package by.it_academy.food_diary.service;
 import by.it_academy.food_diary.dao.api.IProductDao;
 import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.service.api.IProductService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class ProductService implements IProductService {
         this.productDAO = productDAO;
     }
 
+
     public void save(Product product) {
         productDAO.save(product);
     }
@@ -28,7 +30,7 @@ public class ProductService implements IProductService {
 
     public Product get(Long id) {
         return productDAO.findById(id).orElseThrow(
-                        () -> new IllegalArgumentException("Person по id не найден")
+                        () -> new IllegalArgumentException("Product not found")
                 );
     }
 
@@ -38,6 +40,9 @@ public class ProductService implements IProductService {
         productToUpdate.setBrand(updatedProduct.getBrand());
         productToUpdate.setCalories(updatedProduct.getCalories());
         productToUpdate.setProtein(updatedProduct.getProtein());
+        productToUpdate.setFats(updatedProduct.getFats());
+        productToUpdate.setCarbonates((updatedProduct.getCarbonates()));
+        productToUpdate.setMeasure(updatedProduct.getMeasure());
         productDAO.saveAndFlush(productToUpdate);
     }
 
