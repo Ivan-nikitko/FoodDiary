@@ -1,9 +1,11 @@
 package by.it_academy.food_diary.models;
 
-import by.it_academy.food_diary.models.api.Activity;
-import by.it_academy.food_diary.models.api.Sex;
+import by.it_academy.food_diary.models.api.EActivity;
+import by.it_academy.food_diary.models.api.EPurpose;
+import by.it_academy.food_diary.models.api.ESex;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -15,8 +17,14 @@ public class Profile {
     User user;
     private double height;
     private double weight;
-    private Date birthdayDate;
-    private Sex sex;
-    private Activity activity;
+    private LocalDateTime birthdayDate;
+    private ESex sex;
+    private EActivity activity;
+    private EPurpose purpose;
+
+    @OneToOne
+    private User userCreator;
+    private LocalDateTime creationDate;
+    private LocalDateTime updateDate;
 
 }

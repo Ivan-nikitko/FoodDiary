@@ -1,6 +1,7 @@
 package by.it_academy.food_diary.models;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -16,8 +17,7 @@ public class Recipe {
 
     @OneToOne
     private User userCreator;
-
-    private Date creationDate;
-    private Date updateDate;
+    private LocalDateTime creationDate;
+    private LocalDateTime updateDate;
 
 }

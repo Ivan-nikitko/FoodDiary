@@ -1,6 +1,7 @@
 package by.it_academy.food_diary.models;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Table(name = "Product")
 @Entity
@@ -24,12 +25,19 @@ public class Product {
     @Column
     private double measure;
 
+    @OneToOne
+    private User userCreator;
+    private LocalDateTime creationDate;
+    private LocalDateTime updateDate;
+
+
 
     public long getId() {
         return id;
     }
 
     public Product() {
+        this.creationDate=LocalDateTime.now();
     }
 
     public String getName() {

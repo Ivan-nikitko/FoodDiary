@@ -1,6 +1,6 @@
 package by.it_academy.food_diary.models.api;
 
-public enum Activity {
+public enum EActivity {
     LOW,
     MEDIUM,
     HIGH

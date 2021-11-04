@@ -1,6 +1,7 @@
 package by.it_academy.food_diary.models;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -12,9 +13,9 @@ public class Component {
     private Recipe recipe;
     @OneToOne
     private Product product;
+
     private Double measure;
 
-
-    private Date creationDate;
-    private Date updateDate;
+    private LocalDateTime creationDate;
+    private LocalDateTime updateDate;
 }

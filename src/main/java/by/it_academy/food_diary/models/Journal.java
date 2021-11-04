@@ -1,6 +1,9 @@
 package by.it_academy.food_diary.models;
 
+import by.it_academy.food_diary.models.api.EMealTime;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class Journal {
@@ -8,14 +11,18 @@ public class Journal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @OneToOne
-    private User user;
+    private Profile profile;
     @OneToOne
     private Recipe recipe;
     @OneToOne
     private Product product;
     @Column
     private Double measure;
-    //private MealTime mealTime;
+    private EMealTime mealTime;
+
+
+    private LocalDateTime creationDate;
+    private LocalDateTime updateDate;
+
 }
 
-//TODO add creation date update date User-creator

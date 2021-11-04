@@ -4,18 +4,16 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class WeightMeasurement {
+public class Audit {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private long id;
-
-    private double weight;
-    @OneToOne
-    private Profile profile;
+    private Long id;
+    private String text;
+    private String entityType;
+    private Long entityId;
 
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
-
 }
