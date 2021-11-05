@@ -96,5 +96,27 @@ public class Product {
         this.measure = measure;
     }
 
+    public User getUserCreator() {
+        return userCreator;
+    }
 
+    public void setUserCreator(User userCreator) {
+        this.userCreator = userCreator;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
+    }
 }

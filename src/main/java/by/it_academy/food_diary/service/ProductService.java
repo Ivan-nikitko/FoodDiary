@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -44,6 +45,7 @@ public class ProductService implements IProductService {
         productToUpdate.setFats(updatedProduct.getFats());
         productToUpdate.setCarbonates((updatedProduct.getCarbonates()));
         productToUpdate.setMeasure(updatedProduct.getMeasure());
+        productToUpdate.setUpdateDate(LocalDateTime.now());
         productDAO.saveAndFlush(productToUpdate);
     }
 
