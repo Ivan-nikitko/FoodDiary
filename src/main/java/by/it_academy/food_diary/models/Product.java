@@ -1,5 +1,11 @@
 package by.it_academy.food_diary.models;
 
+import by.it_academy.food_diary.service.util.LocalDateDeserializer;
+import by.it_academy.food_diary.service.util.LocalDateSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -28,7 +34,14 @@ public class Product {
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;
-    private LocalDateTime updateDate;
+
+    @Column
+  //  @JsonDeserialize(using = LocalDateDeserializer.class)
+  //  @JsonSerialize(using = LocalDateSerializer.class)
+   // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
+    private String updateDate;
 
 
 
@@ -38,6 +51,7 @@ public class Product {
 
     public Product() {
         this.creationDate=LocalDateTime.now();
+        this.updateDate=creationDate.toString();
     }
 
     public String getName() {
@@ -96,5 +110,27 @@ public class Product {
         this.measure = measure;
     }
 
+    public User getUserCreator() {
+        return userCreator;
+    }
 
+    public void setUserCreator(User userCreator) {
+        this.userCreator = userCreator;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
 }

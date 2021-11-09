@@ -15,5 +15,4 @@ public class Audit {
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;
-    private LocalDateTime updateDate;
 }
