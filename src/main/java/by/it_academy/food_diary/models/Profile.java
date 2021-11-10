@@ -6,7 +6,6 @@ import by.it_academy.food_diary.models.api.ESex;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 public class Profile {

@@ -8,7 +8,7 @@ public class Audit {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
-    private String text;
+    private User user;
     private String entityType;
     private Long entityId;
 

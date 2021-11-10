@@ -2,8 +2,6 @@ package by.it_academy.food_diary.models;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 
 @Entity

@@ -1,11 +1,5 @@
 package by.it_academy.food_diary.models;
 
-import by.it_academy.food_diary.service.util.LocalDateDeserializer;
-import by.it_academy.food_diary.service.util.LocalDateSerializer;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
