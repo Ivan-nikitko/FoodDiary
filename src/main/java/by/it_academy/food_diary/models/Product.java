@@ -35,8 +35,7 @@ public class Product {
    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
-    private String updateDate;
-
+    private LocalDateTime updateDate;
 
 
     public long getId() {
@@ -45,7 +44,7 @@ public class Product {
 
     public Product() {
         this.creationDate=LocalDateTime.now();
-        this.updateDate=creationDate.toString();
+        this.updateDate=creationDate;
     }
 
     public String getName() {
@@ -120,11 +119,11 @@ public class Product {
         this.creationDate = creationDate;
     }
 
-    public String getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(String updateDate) {
+    public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
     }
 }

@@ -1,4 +1,4 @@
-package by.it_academy.food_diary.controller;
+package by.it_academy.food_diary.controller.filters;
 
 import io.jsonwebtoken.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

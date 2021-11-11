@@ -8,11 +8,75 @@ public class Audit {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+    @OneToOne
     private User user;
-    private String entityType;
-    private Long entityId;
+    @Column
+    private String description;
+
+    @Column
+    private String essenceName;
+
+    @Column
+    private Long essenceId;
 
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getEssenceName() {
+        return essenceName;
+    }
+
+    public void setEssenceName(String essenceName) {
+        this.essenceName = essenceName;
+    }
+
+    public Long getEssenceId() {
+        return essenceId;
+    }
+
+    public void setEssenceId(Long essenceId) {
+        this.essenceId = essenceId;
+    }
+
+    public User getUserCreator() {
+        return userCreator;
+    }
+
+    public void setUserCreator(User userCreator) {
+        this.userCreator = userCreator;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
 }

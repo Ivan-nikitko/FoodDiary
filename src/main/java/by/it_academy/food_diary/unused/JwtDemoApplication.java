@@ -1,4 +1,4 @@
-package by.it_academy.food_diary;
+package by.it_academy.food_diary.unused;
 
 import by.it_academy.food_diary.controller.JWTAuthorizationFilter;
 import org.springframework.boot.SpringApplication;

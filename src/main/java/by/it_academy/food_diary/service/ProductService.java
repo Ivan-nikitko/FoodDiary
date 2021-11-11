@@ -42,17 +42,12 @@ public class ProductService implements IProductService {
 
     public void update(Product updatedProduct, Long id) {
         Product productToUpdate = get(id);
-        String updatedProductUpdateDate = updatedProduct.getUpdateDate();
-        String productToUpdateUpdateDate = productToUpdate.getUpdateDate();
-        System.out.println(LocalDateTime.parse(productToUpdateUpdateDate));
-        if (!updatedProductUpdateDate.equals(productToUpdateUpdateDate)){
-            throw new OptimisticLockException("Product has already been changed");
-        }else {
-     /*   LocalDateTime updateDate = updatedProduct.getUpdateDate();
+
+        LocalDateTime updateDate = updatedProduct.getUpdateDate();
         LocalDateTime productToUpdateUpdateDate = productToUpdate.getUpdateDate();
         if(updateDate!=productToUpdateUpdateDate){
           throw new OptimisticLockException("Product has already been changed");
-        }*/
+        }
             productToUpdate.setName(updatedProduct.getName());
             productToUpdate.setBrand(updatedProduct.getBrand());
             productToUpdate.setCalories(updatedProduct.getCalories());
@@ -60,9 +55,9 @@ public class ProductService implements IProductService {
             productToUpdate.setFats(updatedProduct.getFats());
             productToUpdate.setCarbonates((updatedProduct.getCarbonates()));
             productToUpdate.setMeasure(updatedProduct.getMeasure());
-            productToUpdate.setUpdateDate(LocalDateTime.now().toString());
+            productToUpdate.setUpdateDate(LocalDateTime.now());
             productDAO.saveAndFlush(productToUpdate);
-        }
+
     }
 
     public void delete(Long id) throws EmptyResultDataAccessException {

@@ -3,6 +3,8 @@ package by.it_academy.food_diary.service;
 import by.it_academy.food_diary.dao.api.IRecipeDao;
 import by.it_academy.food_diary.models.Recipe;
 import by.it_academy.food_diary.service.api.IRecipeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +24,10 @@ public class RecipeService implements IRecipeService {
     }
 
     @Override
+    public Page<Recipe> getAll(Pageable pageable) {
+        return null;
+    }
+
     public List<Recipe> getAll() {
         return recipeDao.findAll();
     }

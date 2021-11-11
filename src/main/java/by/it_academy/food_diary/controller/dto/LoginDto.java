@@ -1,6 +1,6 @@
-package by.it_academy.food_diary.models;
+package by.it_academy.food_diary.controller.dto;
 
-public class Authentication {
+public class LoginDto {
     private String login;
     private String password;
 

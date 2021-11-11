@@ -1,31 +1,43 @@
 package by.it_academy.food_diary.controller;
 
-import by.it_academy.food_diary.models.User1;
+import by.it_academy.food_diary.controller.dto.LoginDto;
+import by.it_academy.food_diary.models.User;
+import by.it_academy.food_diary.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
-	@PostMapping("user")
-	public User1 login(@RequestParam("user") String username, @RequestParam("password") String pwd) {
-		
-		String token = getJWTToken(username);
-		User1 user = new User1();
-		user.setUser(username);
-		user.setToken(token);
-		return user;
-		
+	private final UserService userService;
+
+	public UserController(UserService userService) {
+		this.userService = userService;
 	}
+
+	@PostMapping()
+	public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
+		String token = getJWTToken(loginDto.getLogin());
+		User user = new User();
+		user.setLogin(loginDto.getLogin());
+		user.setPassword(loginDto.getPassword());
+		user.setCreationDate(LocalDateTime.now());
+		userService.save(user);
+		return new ResponseEntity<>(token,HttpStatus.CREATED);
+	}
+		
+
 
 	private String getJWTToken(String username) {
 		String secretKey = "mySecretKey";
