@@ -12,14 +12,14 @@ public class Recipe {
     @Column
     private String name;
 
-    public Recipe(LocalDateTime creationDate) {
-        this.creationDate = LocalDateTime.now();
-    }
+
 
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
+
+
 
     public Long getId() {
         return id;

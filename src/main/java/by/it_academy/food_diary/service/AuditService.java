@@ -3,7 +3,6 @@ package by.it_academy.food_diary.service;
 import by.it_academy.food_diary.dao.api.IAuditDao;
 import by.it_academy.food_diary.models.Audit;
 import by.it_academy.food_diary.service.api.IAuditService;
-import by.it_academy.food_diary.service.api.Iservice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class AuditService implements IAuditService {
 
     @Override
     public Page<Audit> getAll(Pageable pageable) {
-        return null;
+        return auditDao.findAll(pageable);
     }
 
     @Override
@@ -37,7 +36,7 @@ public class AuditService implements IAuditService {
     }
 
     @Override
-    public void delete(Long aLong) {
+    public void delete(Audit audit,Long aLong) {
 
     }
 }

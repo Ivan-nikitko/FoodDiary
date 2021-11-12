@@ -9,5 +9,5 @@ public interface Iservice <T,ID> {
     Page<T> getAll (Pageable pageable);
     T get(ID id);
     void update(T item, ID id);
-    void delete (ID id);
+    void delete (T item,ID id);
 }

@@ -25,7 +25,7 @@ public class RecipeService implements IRecipeService {
 
     @Override
     public Page<Recipe> getAll(Pageable pageable) {
-        return null;
+        return recipeDao.findAll(pageable);
     }
 
     public List<Recipe> getAll() {
@@ -48,7 +48,7 @@ public class RecipeService implements IRecipeService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Recipe recipe,Long id) {
         recipeDao.deleteById(id);
     }
 }

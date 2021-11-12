@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 
 @Service
@@ -29,8 +28,7 @@ public class ProductService implements IProductService {
     }
 
 
-
-    public  Page<Product> getAll(Pageable pageable) {
+    public Page<Product> getAll(Pageable pageable) {
         return productDAO.findAll(pageable);
     }
 
@@ -43,11 +41,11 @@ public class ProductService implements IProductService {
     public void update(Product updatedProduct, Long id) {
         Product productToUpdate = get(id);
 
-        LocalDateTime updateDate = updatedProduct.getUpdateDate();
+        LocalDateTime updatedProductUpdateDate = updatedProduct.getUpdateDate();
         LocalDateTime productToUpdateUpdateDate = productToUpdate.getUpdateDate();
-        if(updateDate!=productToUpdateUpdateDate){
-          throw new OptimisticLockException("Product has already been changed");
-        }
+        if (updatedProductUpdateDate != productToUpdateUpdateDate) {
+            throw new OptimisticLockException("Product has already been changed");
+        } else {
             productToUpdate.setName(updatedProduct.getName());
             productToUpdate.setBrand(updatedProduct.getBrand());
             productToUpdate.setCalories(updatedProduct.getCalories());
@@ -57,11 +55,16 @@ public class ProductService implements IProductService {
             productToUpdate.setMeasure(updatedProduct.getMeasure());
             productToUpdate.setUpdateDate(LocalDateTime.now());
             productDAO.saveAndFlush(productToUpdate);
-
+        }
     }
 
-    public void delete(Long id) throws EmptyResultDataAccessException {
-        productDAO.deleteById(id);
+    public void delete(Product product, Long id) throws EmptyResultDataAccessException {
+        Product dataBaseProduct = get(id);
+        if (product.getUpdateDate() != dataBaseProduct.getUpdateDate()) {
+            throw new OptimisticLockException("Product has already been changed");
+        }else {
+            productDAO.deleteById(id);
+        }
     }
 
 }

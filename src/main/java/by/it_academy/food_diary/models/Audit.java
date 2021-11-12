@@ -19,8 +19,6 @@ public class Audit {
     @Column
     private Long essenceId;
 
-    @OneToOne
-    private User userCreator;
     private LocalDateTime creationDate;
 
 
@@ -62,14 +60,6 @@ public class Audit {
 
     public void setEssenceId(Long essenceId) {
         this.essenceId = essenceId;
-    }
-
-    public User getUserCreator() {
-        return userCreator;
-    }
-
-    public void setUserCreator(User userCreator) {
-        this.userCreator = userCreator;
     }
 
     public LocalDateTime getCreationDate() {

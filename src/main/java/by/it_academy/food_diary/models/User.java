@@ -1,6 +1,7 @@
 package by.it_academy.food_diary.models;
 
 import by.it_academy.food_diary.models.api.ERole;
+import by.it_academy.food_diary.models.api.EStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
@@ -17,9 +18,8 @@ public class User {
     private String login;
     private String password;
     private ERole role;
-    @Column(name = "dateOfBirth")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
-    private LocalDate dateOfBirth;
+    private EStatus status;
+
 
 
     @OneToOne
@@ -69,14 +69,6 @@ public class User {
     }
 
 
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
     public User getUserCreator() {
         return userCreator;
     }
@@ -99,5 +91,13 @@ public class User {
 
     public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public EStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EStatus status) {
+        this.status = status;
     }
 }

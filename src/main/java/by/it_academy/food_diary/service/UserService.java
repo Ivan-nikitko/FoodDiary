@@ -42,7 +42,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(User user,Long id) {
 
     }
 }
