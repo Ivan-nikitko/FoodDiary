@@ -2,6 +2,8 @@ package by.it_academy.food_diary.models;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -11,14 +13,13 @@ public class Recipe {
     private Long id;
     @Column
     private String name;
-
-
+    @OneToMany
+    private List<Component> components;
 
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
-
 
 
     public Long getId() {
@@ -60,4 +61,13 @@ public class Recipe {
     public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
     }
+
+    public List<Component> getComponents() {
+        return components;
+    }
+
+    public void setComponents(List<Component> components) {
+        this.components = components;
+    }
 }
+

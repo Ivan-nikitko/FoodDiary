@@ -36,6 +36,7 @@ public class UserService implements IUserService {
         return null;
     }
 
+
     @Override
     public void update(User updatedUser, Long id) {
 
@@ -44,5 +45,10 @@ public class UserService implements IUserService {
     @Override
     public void delete(User user,Long id) {
 
+    }
+
+    @Override
+    public User findByLogin(String login) {
+        return userDao.findByLogin(login);
     }
 }

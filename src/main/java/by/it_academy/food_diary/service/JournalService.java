@@ -41,7 +41,7 @@ public class JournalService implements IJournalService {
     }
 
     @Override
-    public Journal get(Long aLong) {
+    public Journal get(Long id) {
         return null;
     }
 

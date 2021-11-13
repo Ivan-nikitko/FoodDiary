@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Audit {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
     private User user;

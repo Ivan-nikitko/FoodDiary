@@ -54,9 +54,9 @@ public class ProductsController {
     @PutMapping("/{id}/dt_update/{dt_update}")
     public ResponseEntity<?> update(@RequestBody Product product,
                                     @PathVariable("id") Long id,
-                                    @PathVariable("dt_update") String dt_update) {
+                                    @PathVariable("dt_update") String dtUpdate) {
         try {
-            product.setUpdateDate(LocalDateTime.parse(dt_update));
+            product.setUpdateDate(LocalDateTime.parse(dtUpdate));
             productService.update(product, id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (OptimisticLockException e) {

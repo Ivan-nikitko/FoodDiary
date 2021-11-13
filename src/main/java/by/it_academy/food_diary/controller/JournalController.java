@@ -37,13 +37,14 @@ public class JournalController {
                                                @RequestParam(value = "page", defaultValue = "0") int page,
                                                @RequestParam(value = "size", defaultValue = "2") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        //TODO create check by idProfile
         Page<Journal> journals = journalService.getAllByProfileId(pageable, id_profile);
         return new ResponseEntity<>(journals, HttpStatus.OK);
     }
 
-    @GetMapping("/{id_profile}/journal/food/{day}")
+    @GetMapping("/{id_profile}/journal/food/byDay/{day}")
     public ResponseEntity<?> showDay(@PathVariable("id_profile") Long id_profile,
-                                  @PathVariable("day") Integer day) {
+                                     @PathVariable("day") Integer day) {
         try {
             List<Journal> journals = journalService.getOneDay(day);
             return new ResponseEntity<>(journals, HttpStatus.OK);

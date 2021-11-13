@@ -1,6 +1,8 @@
 package by.it_academy.food_diary.service;
 
+import by.it_academy.food_diary.dao.api.IComponentDao;
 import by.it_academy.food_diary.dao.api.IRecipeDao;
+import by.it_academy.food_diary.models.Component;
 import by.it_academy.food_diary.models.Recipe;
 import by.it_academy.food_diary.service.api.IRecipeService;
 import org.springframework.data.domain.Page;
@@ -12,14 +14,24 @@ import java.util.List;
 
 @Service
 public class RecipeService implements IRecipeService {
-    private IRecipeDao recipeDao;
+    private final IRecipeDao recipeDao;
+    private final IComponentDao componentDao;
 
-    public RecipeService(IRecipeDao recipeDao) {
+    public RecipeService(IRecipeDao recipeDao, IComponentDao componentDao) {
         this.recipeDao = recipeDao;
+        this.componentDao = componentDao;
     }
 
     @Override
     public void save(Recipe recipe) {
+        List<Component> components = recipe.getComponents();
+        recipe.setCreationDate(LocalDateTime.now());
+        recipe.setUpdateDate(recipe.getCreationDate());
+        for (Component component : components) {
+            component.setCreationDate(recipe.getCreationDate());
+            component.setUpdateDate(component.getCreationDate());
+            componentDao.save(component);
+        }
         recipeDao.save(recipe);
     }
 
