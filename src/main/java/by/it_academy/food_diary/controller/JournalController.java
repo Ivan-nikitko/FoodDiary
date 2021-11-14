@@ -1,5 +1,6 @@
 package by.it_academy.food_diary.controller;
 
+import by.it_academy.food_diary.controller.dto.JournalByDayDto;
 import by.it_academy.food_diary.models.Journal;
 
 import by.it_academy.food_diary.models.Profile;
@@ -29,6 +30,7 @@ public class JournalController {
 
     private final IJournalService journalService;
     private final IProfileService profileService;
+    private final int MILLISECOND_IN_DAY = 86400000;
 
     public JournalController(IJournalService journalService, IProfileService profileService) {
         this.journalService = journalService;
@@ -49,14 +51,14 @@ public class JournalController {
     public ResponseEntity<?> showDay(@PathVariable("id_profile") Long idProfile,
                                      @PathVariable("day") Long day) {
         try {
-            Long dayInMilliseconds = day*86400000;
+            Long dayInMilliseconds = day*MILLISECOND_IN_DAY;
             LocalDateTime date =
                     LocalDateTime.ofInstant(Instant.ofEpochMilli(dayInMilliseconds), ZoneId.systemDefault());
             LocalDateTime endOfDate = date.with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
             LocalDateTime startOfDate = endOfDate.minusDays(1L);
 
-            List<Journal> journals = journalService.findAllByProfileIdAndCreationDate(startOfDate,endOfDate,idProfile);
-            return new ResponseEntity<>(journals, HttpStatus.OK);
+            JournalByDayDto journalByDayDto = journalService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile);
+            return new ResponseEntity<>(journalByDayDto, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
