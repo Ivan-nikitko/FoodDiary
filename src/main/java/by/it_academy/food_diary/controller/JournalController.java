@@ -1,7 +1,6 @@
 package by.it_academy.food_diary.controller;
 
 import by.it_academy.food_diary.models.Journal;
-import by.it_academy.food_diary.models.Product;
 
 import by.it_academy.food_diary.models.Profile;
 import by.it_academy.food_diary.service.api.IJournalService;
@@ -16,7 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.OptimisticLockException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoField;
 import java.util.List;
 
 
@@ -43,10 +46,16 @@ public class JournalController {
     }
 
     @GetMapping("/{id_profile}/journal/food/byDay/{day}")
-    public ResponseEntity<?> showDay(@PathVariable("id_profile") Long id_profile,
-                                     @PathVariable("day") Integer day) {
+    public ResponseEntity<?> showDay(@PathVariable("id_profile") Long idProfile,
+                                     @PathVariable("day") Long day) {
         try {
-            List<Journal> journals = journalService.getOneDay(day);
+            Long dayInMilliseconds = day*86400000;
+            LocalDateTime date =
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(dayInMilliseconds), ZoneId.systemDefault());
+            LocalDateTime endOfDate = date.with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
+            LocalDateTime startOfDate = endOfDate.minusDays(1L);
+
+            List<Journal> journals = journalService.findAllByProfileIdAndCreationDate(startOfDate,endOfDate,idProfile);
             return new ResponseEntity<>(journals, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -65,11 +74,13 @@ public class JournalController {
         }
     }
 
-    @PostMapping("/{id_profile}/journal/food/")
+    @PostMapping("/{id_profile}/journal/food")
     public ResponseEntity<?> save(@RequestBody Journal journal,
                                   @PathVariable("id_profile") Long id_profile) {
         Profile profile = profileService.get(id_profile);
         journal.setProfile(profile);
+        journal.setCreationDate(LocalDateTime.now());
+        journal.setUpdateDate(journal.getCreationDate());
         journalService.save(journal);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

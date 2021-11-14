@@ -36,6 +36,11 @@ public class JournalService implements IJournalService {
     }
 
     @Override
+    public List<Journal> findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id) {
+       return journalDao.findAllByCreationDateBetweenAndProfile(start,end,id);
+    }
+
+    @Override
     public List<Journal> getOneDay(Integer day) {
         return journalDao.findByCreationDateIs(day);
     }

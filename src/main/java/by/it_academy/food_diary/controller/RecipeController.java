@@ -1,9 +1,7 @@
 package by.it_academy.food_diary.controller;
 
-import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.models.Recipe;
-import by.it_academy.food_diary.service.ProductService;
-import by.it_academy.food_diary.service.api.IProductService;
+import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IRecipeService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -22,9 +20,11 @@ import java.time.LocalDateTime;
 public class RecipeController {
 
     private final IRecipeService recipeService;
+    private final UserHolder userHolder;
 
-    public RecipeController(IRecipeService recipeService) {
+    public RecipeController(IRecipeService recipeService, UserHolder userHolder) {
         this.recipeService = recipeService;
+        this.userHolder = userHolder;
     }
 
     @GetMapping
@@ -48,6 +48,7 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Recipe recipe) {
+        recipe.setUserCreator(userHolder.getUser());
         recipeService.save(recipe);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
