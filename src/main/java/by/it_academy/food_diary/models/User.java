@@ -5,6 +5,8 @@ import by.it_academy.food_diary.models.api.EStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -14,7 +16,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column
+ //   @NotBlank(message = "Name is mandatory")
     private String name;
+    @Column(unique=true)
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is mandatory")
     private String login;
     private String password;
     private ERole role;
