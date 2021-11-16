@@ -2,7 +2,6 @@ package by.it_academy.food_diary.models;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -14,7 +13,7 @@ public class Recipe {
     @Column
     private String name;
     @OneToMany
-    private List<Component> components;
+    private List<Ingredient> ingredients;
 
     @OneToOne
     private User userCreator;
@@ -62,12 +61,13 @@ public class Recipe {
         this.updateDate = updateDate;
     }
 
-    public List<Component> getComponents() {
-        return components;
+    public List<Ingredient> getIngredients() {
+        return ingredients;
     }
 
-    public void setComponents(List<Component> components) {
-        this.components = components;
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
     }
+
 }
 

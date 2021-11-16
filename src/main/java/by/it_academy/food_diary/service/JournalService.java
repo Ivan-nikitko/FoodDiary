@@ -2,7 +2,7 @@ package by.it_academy.food_diary.service;
 
 import by.it_academy.food_diary.controller.dto.JournalByDayDto;
 import by.it_academy.food_diary.dao.api.IJournalDao;
-import by.it_academy.food_diary.models.Component;
+import by.it_academy.food_diary.models.Ingredient;
 import by.it_academy.food_diary.models.Journal;
 import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.models.Recipe;
@@ -60,12 +60,12 @@ public class JournalService implements IJournalService {
             if (recipe != null) {
                 double recipeMeasure = 0;
                 double recipeCalories = 0;
-                List<Component> components = recipe.getComponents();
-                for (Component component : components) {
-                    Product componentProduct = component.getProduct();
+                List<Ingredient> ingredients = recipe.getIngredients();
+                for (Ingredient ingredient : ingredients) {
+                    Product componentProduct = ingredient.getProduct();
                     double componentProductCalories = componentProduct.getCalories();
                     double componentProductMeasure = componentProduct.getMeasure();
-                    Double componentMeasure = component.getMeasure();
+                    Double componentMeasure = ingredient.getMeasure();
                     recipeMeasure += componentMeasure;
                     recipeCalories += componentProductCalories * componentMeasure / componentProductMeasure;
                     double calories = recipeCalories * measure / recipeMeasure;

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-public class Component {
+public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
