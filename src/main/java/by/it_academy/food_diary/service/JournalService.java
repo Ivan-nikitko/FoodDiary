@@ -86,7 +86,8 @@ public class JournalService implements IJournalService {
 
     @Override
     public Journal get(Long id) {
-        return null;
+        return journalDao.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Journal not found"));
     }
 
     @Override
