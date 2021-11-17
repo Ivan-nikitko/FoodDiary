@@ -33,7 +33,8 @@ public class UserService implements IUserService {
 
     @Override
     public User get(Long id) {
-        return null;
+        return userDao.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Recipe not found"));
     }
 
 
@@ -43,7 +44,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void delete(User user,Long id) {
+    public void delete(User user, Long id) {
 
     }
 

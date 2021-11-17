@@ -1,6 +1,6 @@
 package by.it_academy.food_diary.service;
 
-import by.it_academy.food_diary.controller.dto.JournalByDayDto;
+import by.it_academy.food_diary.controller.dto.JournalByDateDto;
 import by.it_academy.food_diary.dao.api.IJournalDao;
 import by.it_academy.food_diary.models.Ingredient;
 import by.it_academy.food_diary.models.Journal;
@@ -41,8 +41,8 @@ public class JournalService implements IJournalService {
     }
 
     @Override
-    public JournalByDayDto findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id) {
-        JournalByDayDto journalByDayDto = new JournalByDayDto();
+    public JournalByDateDto findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id) {
+        JournalByDateDto journalByDateDto = new JournalByDateDto();
         List<Journal> journalList = new ArrayList<>();
         double sumOfCalories = 0;
         List<Journal> journals = journalDao.findAllByCreationDateBetweenAndProfileId(start, end, id);
@@ -73,9 +73,9 @@ public class JournalService implements IJournalService {
                 }
             }
         }
-        journalByDayDto.setJournals(journalList);
-        journalByDayDto.setSumOfCalories(sumOfCalories);
-        return journalByDayDto;
+        journalByDateDto.setJournals(journalList);
+        journalByDateDto.setSumOfCalories(sumOfCalories);
+        return journalByDateDto;
     }
 
     @Override

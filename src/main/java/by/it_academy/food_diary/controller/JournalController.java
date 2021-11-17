@@ -1,6 +1,6 @@
 package by.it_academy.food_diary.controller;
 
-import by.it_academy.food_diary.controller.dto.JournalByDayDto;
+import by.it_academy.food_diary.controller.dto.JournalByDateDto;
 import by.it_academy.food_diary.models.Journal;
 
 import by.it_academy.food_diary.models.Profile;
@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoField;
-import java.util.List;
 
 
 @RestController
@@ -57,8 +56,8 @@ public class JournalController {
             LocalDateTime endOfDate = date.with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
             LocalDateTime startOfDate = endOfDate.minusDays(1L);
 
-            JournalByDayDto journalByDayDto = journalService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile);
-            return new ResponseEntity<>(journalByDayDto, HttpStatus.OK);
+            JournalByDateDto journalByDateDto = journalService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile);
+            return new ResponseEntity<>(journalByDateDto, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

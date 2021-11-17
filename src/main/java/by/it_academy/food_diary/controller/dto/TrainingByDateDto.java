@@ -1,20 +1,19 @@
 package by.it_academy.food_diary.controller.dto;
 
-import by.it_academy.food_diary.models.Journal;
-
+import by.it_academy.food_diary.models.Training;
 
 import java.util.List;
 
-public class JournalByDayDto {
-    private List<Journal> journals;
+public class TrainingByDateDto {
+    private List<Training> trainings;
     private double sumOfCalories;
 
-    public List<Journal> getJournals() {
-        return journals;
+    public List<Training> getTrainings() {
+        return trainings;
     }
 
-    public void setJournals(List<Journal> journals) {
-        this.journals = journals;
+    public void setTrainings(List<Training> trainings) {
+        this.trainings = trainings;
     }
 
     public double getSumOfCalories() {

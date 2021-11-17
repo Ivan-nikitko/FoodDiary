@@ -32,7 +32,11 @@ public class Initializer {
     private final IRecipeDao recipeDao;
     private final IIngredientDao ingredientDao;
 
-    public Initializer(IProductService productService, IProductDao productDao, IUserDao userDao, IRecipeDao recipeDao, IIngredientDao ingredientDao) {
+    public Initializer(IProductService productService,
+                       IProductDao productDao,
+                       IUserDao userDao,
+                       IRecipeDao recipeDao,
+                       IIngredientDao ingredientDao) {
         this.productDao = productDao;
         this.userDao = userDao;
         this.recipeDao = recipeDao;
