@@ -30,11 +30,8 @@ public class Product {
     private LocalDateTime creationDate;
 
     @Column
-  //  @JsonDeserialize(using = LocalDateDeserializer.class)
-  //  @JsonSerialize(using = LocalDateSerializer.class)
-   // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
+   //TODO add @Version
+    //TODO add email
     private LocalDateTime updateDate;
 
 
@@ -43,8 +40,8 @@ public class Product {
     }
 
     public Product() {
-        this.creationDate=LocalDateTime.now();
-        this.updateDate=creationDate;
+        this.creationDate = LocalDateTime.now();
+        this.updateDate = creationDate;
     }
 
     public String getName() {

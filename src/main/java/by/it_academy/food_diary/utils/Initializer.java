@@ -15,6 +15,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
@@ -31,16 +32,18 @@ public class Initializer {
     private final IUserDao userDao;
     private final IRecipeDao recipeDao;
     private final IIngredientDao ingredientDao;
+    private final PasswordEncoder passwordEncoder;
 
     public Initializer(IProductService productService,
                        IProductDao productDao,
                        IUserDao userDao,
                        IRecipeDao recipeDao,
-                       IIngredientDao ingredientDao) {
+                       IIngredientDao ingredientDao, PasswordEncoder passwordEncoder) {
         this.productDao = productDao;
         this.userDao = userDao;
         this.recipeDao = recipeDao;
         this.ingredientDao = ingredientDao;
+        this.passwordEncoder = passwordEncoder;
         generateAdmin();
         generateProducts();
         generateRecipes();
@@ -51,7 +54,7 @@ public class Initializer {
         User user = new User();
         user.setName("Администратор Администратович");
         user.setLogin("admin@mail.ru");
-        user.setPassword("111");
+        user.setPassword(passwordEncoder.encode("111"));
         user.setRole(ERole.ROLE_ADMIN);
         user.setStatus(EStatus.ACTIVE);
         user.setCreationDate(LocalDateTime.now());

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +27,11 @@ import java.util.stream.Collectors;
 public class UserController {
 
 	private final UserService userService;
+	private PasswordEncoder passwordEncoder;
 
-	public UserController(UserService userService) {
+	public UserController(UserService userService, PasswordEncoder passwordEncoder) {
 		this.userService = userService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@PostMapping()
@@ -36,7 +39,7 @@ public class UserController {
 		String token = getJWTToken(loginDto.getLogin());
 		User user = new User();
 		user.setLogin(loginDto.getLogin());
-		user.setPassword(loginDto.getPassword());
+		user.setPassword(passwordEncoder.encode(loginDto.getPassword()));
 		user.setCreationDate(LocalDateTime.now());
 		userService.save(user);
 		return new ResponseEntity<>(token,HttpStatus.CREATED);
