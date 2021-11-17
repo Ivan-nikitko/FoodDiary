@@ -50,7 +50,7 @@ public class JournalController {
     public ResponseEntity<?> showDay(@PathVariable("id_profile") Long idProfile,
                                      @PathVariable("day") Long day) {
         try {
-            Long dayInMilliseconds = day*MILLISECOND_IN_DAY;
+            long dayInMilliseconds = day*MILLISECOND_IN_DAY;
             LocalDateTime date =
                     LocalDateTime.ofInstant(Instant.ofEpochMilli(dayInMilliseconds), ZoneId.systemDefault());
             LocalDateTime endOfDate = date.with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
@@ -64,11 +64,10 @@ public class JournalController {
     }
 
     @GetMapping("/{id_profile}/journal/food/{id_food}")
-    public ResponseEntity<?> show(@PathVariable("id_profile") Long id_profile,
-                                  @PathVariable("id_food") Long id_food,
-                                  @PathVariable("day") Integer day) {
+    public ResponseEntity<?> show(@PathVariable("id_profile") Long idProfile,
+                                  @PathVariable("id_food") Long idFood) {
         try {
-            Journal journal = journalService.get(id_food);
+            Journal journal = journalService.get(idFood);
             return new ResponseEntity<>(journal, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
