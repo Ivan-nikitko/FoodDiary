@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface IJournalService extends Iservice<Journal,Long>{
+public interface IJournalService extends IService<Journal,Long> {
     Page<Journal> getAllByProfileId(Pageable pageable, Long profileId);
     JournalByDateDto findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id);
     List<Journal> findAllByProfile(Long id);

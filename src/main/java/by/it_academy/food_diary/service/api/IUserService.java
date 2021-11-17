@@ -2,9 +2,7 @@ package by.it_academy.food_diary.service.api;
 
 import by.it_academy.food_diary.models.User;
 
-import java.util.List;
-
-public interface IUserService extends Iservice <User,Long>{
+public interface IUserService extends IService<User,Long> {
     User findByLogin(String login);
 
 }

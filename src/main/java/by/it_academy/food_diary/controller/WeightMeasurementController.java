@@ -2,11 +2,14 @@ package by.it_academy.food_diary.controller;
 
 import by.it_academy.food_diary.controller.dto.WeightMeasurementDto;
 import by.it_academy.food_diary.models.Profile;
-import by.it_academy.food_diary.models.Training;
 import by.it_academy.food_diary.models.WeightMeasurement;
 import by.it_academy.food_diary.service.api.IProfileService;
 import by.it_academy.food_diary.service.api.IWeightMeasurementService;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +37,13 @@ public class WeightMeasurementController {
                                   @RequestParam (value = "dt_start") Long dateStartMilliseconds,
                                   @RequestParam(value = "dt_end") Long dateEndMilliseconds) {
         try {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
             LocalDateTime startOfDate =
                     LocalDateTime.ofInstant(Instant.ofEpochMilli(dateStartMilliseconds), ZoneId.systemDefault());
             LocalDateTime endOfDate =
                     LocalDateTime.ofInstant(Instant.ofEpochMilli(dateEndMilliseconds), ZoneId.systemDefault());
-            WeightMeasurementDto weightMeasurementDto = weightMeasurementService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile);
-            return new ResponseEntity<>(weightMeasurementDto, HttpStatus.OK);
+            Page<WeightMeasurement> measurementPage = weightMeasurementService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile, pageable);
+            return new ResponseEntity<>(measurementPage, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

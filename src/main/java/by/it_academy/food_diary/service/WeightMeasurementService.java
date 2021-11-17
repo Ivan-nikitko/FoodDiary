@@ -2,17 +2,16 @@ package by.it_academy.food_diary.service;
 
 import by.it_academy.food_diary.controller.dto.WeightMeasurementDto;
 import by.it_academy.food_diary.dao.api.IWeightMeasurementDao;
-import by.it_academy.food_diary.models.Journal;
 import by.it_academy.food_diary.models.WeightMeasurement;
 import by.it_academy.food_diary.service.api.IWeightMeasurementService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
+@Service
 public class WeightMeasurementService implements IWeightMeasurementService {
 
     private final IWeightMeasurementDao weightMeasurementDao;
@@ -64,14 +63,9 @@ public class WeightMeasurementService implements IWeightMeasurementService {
     }
 
     @Override
-    public WeightMeasurementDto findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id) {
-        WeightMeasurementDto weightMeasurementDto = new WeightMeasurementDto();
-        List<WeightMeasurement> weightMeasurementList = new ArrayList<>();
-        List<WeightMeasurement> weightMeasurements = weightMeasurementDao.findAllByCreationDateBetweenAndProfileId(start, end, id);
-        for (WeightMeasurement weightMeasurement : weightMeasurements) {
-            weightMeasurementList.add(weightMeasurement);
-        }
-        weightMeasurementDto.setWeightMeasurements(weightMeasurementList);
-        return weightMeasurementDto;
+    public Page <WeightMeasurement> findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id, Pageable pageable) {
+
+       return weightMeasurementDao.findAllByCreationDateBetweenAndProfileId(start, end, id, pageable);
+
     }
 }

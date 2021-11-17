@@ -4,7 +4,7 @@ import by.it_academy.food_diary.models.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface Iservice <T,ID> {
+public interface IService<T,ID> {
     void save(T item);
     Page<T> getAll (Pageable pageable);
     T get(ID id);
