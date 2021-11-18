@@ -46,4 +46,53 @@ public class UserAuditService {
             e.printStackTrace();
         }
     }
+
+    @After("execution(* by.it_academy.food_diary.service.UserService.update(..))")
+    public void update(JoinPoint joinPoint){
+        try {
+            Object[] args = joinPoint.getArgs();
+
+            User arg = (User) args[0];
+
+            Audit audit = new Audit();
+            audit.setCreationDate(arg.getUpdateDate());
+            audit.setDescription("Update user  " + arg.getId());
+            String login = userHolder.getAuthentication().getName();
+            User user = userService.findByLogin(login);
+            audit.setUser(user);
+            audit.setEssenceName("User");
+            audit.setEssenceId(arg.getId());
+            auditService.save(audit);
+
+        } catch (Throwable e) {
+            //TODO throw new RuntimeException
+            e.printStackTrace();
+        }
+    }
+
+    @After("execution(* by.it_academy.food_diary.service.UserService.delete(..))")
+    public void delete(JoinPoint joinPoint){
+        try {
+            Object[] args = joinPoint.getArgs();
+
+            User arg = (User) args[0];
+
+            Audit audit = new Audit();
+            audit.setCreationDate(arg.getUpdateDate());
+            audit.setDescription("Delete user  " + arg.getId());
+            String login = userHolder.getAuthentication().getName();
+            User user = userService.findByLogin(login);
+            audit.setUser(user);
+            audit.setEssenceName("User");
+            audit.setEssenceId(arg.getId());
+            auditService.save(audit);
+
+        } catch (Throwable e) {
+            //TODO throw new RuntimeException
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

@@ -1,6 +1,7 @@
 package by.it_academy.food_diary.service;
 
 import by.it_academy.food_diary.controller.dto.JournalByDateDto;
+import by.it_academy.food_diary.controller.dto.JournalDto;
 import by.it_academy.food_diary.dao.api.IJournalDao;
 import by.it_academy.food_diary.models.Ingredient;
 import by.it_academy.food_diary.models.Journal;
@@ -26,7 +27,13 @@ public class JournalService implements IJournalService {
     }
 
     @Override
-    public void save(Journal journal) {
+    public void save(JournalDto journalDto) {
+        Journal journal = new Journal();
+        journal.setProfile(journalDto.getProfile());
+        journal.setProduct(journalDto.getProduct());
+        journal.setRecipe(journalDto.getRecipe());
+        journal.setMeasure(journalDto.getMeasure());
+        journal.setMealTime(journalDto.getMealTime());
         journalDao.save(journal);
     }
 
@@ -91,27 +98,26 @@ public class JournalService implements IJournalService {
     }
 
     @Override
-    public void update(Journal updatedJournal, Long id) {
+    public void update(JournalDto journalDto, Long id) {
         Journal journalToUpdate = get(id);
-        if (updatedJournal.getUpdateDate() != journalToUpdate.getUpdateDate()) {
-            throw new OptimisticLockException("Journal has already been changed");
-        } else {
-            journalToUpdate.setProduct(updatedJournal.getProduct());
-            journalToUpdate.setRecipe(updatedJournal.getRecipe());
-            journalToUpdate.setMeasure(updatedJournal.getMeasure());
-            journalToUpdate.setMealTime(updatedJournal.getMealTime());
-            journalToUpdate.setUpdateDate(LocalDateTime.now());
+        if (journalDto.getUpdateDate().isEqual(journalToUpdate.getUpdateDate())) {
+            journalToUpdate.setProduct(journalDto.getProduct());
+            journalToUpdate.setRecipe(journalDto.getRecipe());
+            journalToUpdate.setMeasure(journalDto.getMeasure());
+            journalToUpdate.setMealTime(journalDto.getMealTime());
             journalDao.saveAndFlush(journalToUpdate);
+        } else {
+            throw new OptimisticLockException("Journal has already been changed");
         }
     }
 
     @Override
-    public void delete(Journal journal, Long id) {
+    public void delete(JournalDto journalDto, Long id) {
         Journal dataBaseJournal = get(id);
-        if (journal.getUpdateDate() != dataBaseJournal.getUpdateDate()) {
-            throw new OptimisticLockException("Product has already been changed");
-        } else {
+        if (journalDto.getUpdateDate().isEqual(dataBaseJournal.getUpdateDate())) {
             journalDao.deleteById(id);
+        } else {
+            throw new OptimisticLockException("Journal has already been changed");
         }
     }
 

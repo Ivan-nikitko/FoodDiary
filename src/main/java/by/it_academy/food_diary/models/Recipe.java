@@ -17,9 +17,16 @@ public class Recipe {
 
     @OneToOne
     private User userCreator;
+    @Column
     private LocalDateTime creationDate;
+    @Version
+    @Column
     private LocalDateTime updateDate;
 
+    public Recipe() {
+        this.creationDate = LocalDateTime.now();
+        this.updateDate = creationDate;
+    }
 
     public Long getId() {
         return id;

@@ -1,48 +1,22 @@
-package by.it_academy.food_diary.models;
+package by.it_academy.food_diary.controller.dto;
 
-import javax.persistence.*;
+import by.it_academy.food_diary.models.User;
+
+
 import java.time.LocalDateTime;
 
+public class ProductDto {
 
-@Entity
-public class Product {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @Column
     private String name;
-    @Column
     private String brand;
-    @Column
     private double calories;
-    @Column
     private double protein;
-    @Column
     private double fats;
-    @Column
     private double carbonates;
-    @Column
     private double measure;
-
-    @OneToOne
     private User userCreator;
-    @Column
     private LocalDateTime creationDate;
-
-    @Column
-    @Version
     private LocalDateTime updateDate;
-
-
-    public long getId() {
-        return id;
-    }
-
-    public Product() {
-        this.creationDate = LocalDateTime.now();
-        this.updateDate = creationDate;
-    }
 
     public String getName() {
         return name;

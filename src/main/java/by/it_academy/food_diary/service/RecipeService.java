@@ -1,37 +1,42 @@
 package by.it_academy.food_diary.service;
 
+import by.it_academy.food_diary.controller.dto.RecipeDto;
 import by.it_academy.food_diary.dao.api.IIngredientDao;
 import by.it_academy.food_diary.dao.api.IRecipeDao;
 import by.it_academy.food_diary.models.Ingredient;
 import by.it_academy.food_diary.models.Recipe;
+import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IRecipeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import javax.persistence.OptimisticLockException;
 import java.util.List;
 
 @Service
 public class RecipeService implements IRecipeService {
     private final IRecipeDao recipeDao;
     private final IIngredientDao ingredientDao;
+    private final UserHolder userHolder;
 
-    public RecipeService(IRecipeDao recipeDao, IIngredientDao ingredientDao) {
+    public RecipeService(IRecipeDao recipeDao, IIngredientDao ingredientDao, UserHolder userHolder) {
         this.recipeDao = recipeDao;
         this.ingredientDao = ingredientDao;
+        this.userHolder = userHolder;
     }
 
     @Override
-    public void save(Recipe recipe) {
-        List<Ingredient> ingredients = recipe.getIngredients();
-        recipe.setCreationDate(LocalDateTime.now());
-        recipe.setUpdateDate(recipe.getCreationDate());
+    public void save(RecipeDto recipeDto) {
+        Recipe recipe = new Recipe();
+        recipe.setUserCreator(userHolder.getUser());
+        List<Ingredient> ingredients = recipeDto.getIngredients();
         for (Ingredient ingredient : ingredients) {
             ingredient.setCreationDate(recipe.getCreationDate());
             ingredient.setUpdateDate(ingredient.getCreationDate());
             ingredientDao.save(ingredient);
         }
+        recipe.setName(recipeDto.getName());
         recipeDao.save(recipe);
     }
 
@@ -40,8 +45,8 @@ public class RecipeService implements IRecipeService {
         return recipeDao.findAll(pageable);
     }
 
-    public List<Recipe> getAll() {
-        return recipeDao.findAll();
+    public Page<Recipe> getAll(String name, Pageable pageable) {
+        return recipeDao.findRecipeByNameContains(name,pageable);
     }
 
     @Override
@@ -52,15 +57,24 @@ public class RecipeService implements IRecipeService {
     }
 
     @Override
-    public void update(Recipe updatedRecipe, Long id) {
+    public void update(RecipeDto recipeDto, Long id) {
         Recipe recipeToUpdate = get(id);
-        recipeToUpdate.setName(updatedRecipe.getName());
-        recipeToUpdate.setUpdateDate(LocalDateTime.now());
-        recipeDao.saveAndFlush(recipeToUpdate);
+        if (recipeDto.getUpdateDate().isEqual(recipeToUpdate.getUpdateDate())) {
+            recipeToUpdate.setName(recipeDto.getName());
+            recipeToUpdate.setIngredients(recipeDto.getIngredients());
+            recipeDao.saveAndFlush(recipeToUpdate);
+        }else {
+            throw new OptimisticLockException("Recipe has already been changed");
+        }
     }
 
     @Override
-    public void delete(Recipe recipe,Long id) {
-        recipeDao.deleteById(id);
+    public void delete(RecipeDto recipeDto,Long id) {
+        Recipe dataBaseRecipe = get(id);
+        if (recipeDto.getUpdateDate().isEqual(dataBaseRecipe.getUpdateDate())) {
+            recipeDao.deleteById(id);
+        }else {
+            throw new OptimisticLockException("Recipe has already been changed");
+        }
     }
 }

@@ -1,9 +1,9 @@
 package by.it_academy.food_diary.controller;
 
+import by.it_academy.food_diary.controller.dto.ProductDto;
 import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.service.ProductService;
-import by.it_academy.food_diary.service.api.IProductService;
-import org.springframework.dao.EmptyResultDataAccessException;
+import by.it_academy.food_diary.utils.TimeUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,19 +13,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.OptimisticLockException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 
 @RestController
 @RequestMapping("/api/product")
 public class ProductsController {
 
-    private final IProductService productService;
+    private final ProductService productService;
+    private final TimeUtil timeUtil;
 
-    public ProductsController(ProductService productService) {
+    public ProductsController(ProductService productService, TimeUtil timeUtil) {
         this.productService = productService;
+        this.timeUtil = timeUtil;
     }
 
     @GetMapping
@@ -33,8 +32,13 @@ public class ProductsController {
                                                @RequestParam(value = "size", defaultValue = "2") int size,
                                                @RequestParam(required = false) String name) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name"));
-        Page<Product> products = productService.getAll(pageable);
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        Page<Product> products;
+            if (name != null) {
+                products = productService.getAll(name, pageable);
+            } else {
+                products = productService.getAll(pageable);
+            }
+            return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -43,43 +47,43 @@ public class ProductsController {
             Product product = productService.get(id);
             return new ResponseEntity<>(product, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody Product product) {
-        productService.save(product);
+    public ResponseEntity<?> save(@RequestBody ProductDto productDto) {
+        productService.save(productDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/dt_update/{dt_update}")
-    public ResponseEntity<?> update(@RequestBody Product product,
+    public ResponseEntity<?> update(@RequestBody ProductDto productDto,
                                     @PathVariable("id") Long id,
-                                    @PathVariable("dt_update") String dtUpdate) {
+                                    @PathVariable("dt_update") Long dtUpdate) {
         try {
-            product.setUpdateDate(LocalDateTime.parse(dtUpdate));
-            productService.update(product, id);
+            productDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
+            productService.update(productDto, id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (OptimisticLockException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/{id}/dt_update/{dt_update}")
-    public ResponseEntity<?> delete(@RequestBody Product product,
+    public ResponseEntity<?> delete(@RequestBody ProductDto productDto,
                                     @PathVariable("id") Long id,
                                     @PathVariable("dt_update") Long dtUpdate) {
         try {
-            product.setUpdateDate(millisecondsToLocalDateTime(dtUpdate));
-            productService.delete(product, id);
+            productDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
+            productService.delete(productDto, id);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
-    public LocalDateTime millisecondsToLocalDateTime(Long milliseconds) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.systemDefault());
-    }
+
 }

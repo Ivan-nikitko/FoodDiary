@@ -1,44 +1,27 @@
-package by.it_academy.food_diary.models;
+package by.it_academy.food_diary.controller.dto;
 
+import by.it_academy.food_diary.models.Product;
+import by.it_academy.food_diary.models.Profile;
+import by.it_academy.food_diary.models.Recipe;
 import by.it_academy.food_diary.models.api.EMealTime;
 
-import javax.persistence.*;
+
 import java.time.LocalDateTime;
 
-@Entity
-public class Journal {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @OneToOne
+public class JournalDto {
+
     private Profile profile;
-    @OneToOne
+
     private Recipe recipe;
-    @OneToOne
+
     private Product product;
-    @Column
+
     private Double measure;
-    @Column
+
     private EMealTime mealTime;
 
-    @Column
-    private LocalDateTime creationDate;
-    @Version
-    @Column
+
     private LocalDateTime updateDate;
-
-    public Journal() {
-        this.creationDate=LocalDateTime.now();
-        this.updateDate=creationDate;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public Profile getProfile() {
         return profile;
@@ -80,14 +63,6 @@ public class Journal {
         this.mealTime = mealTime;
     }
 
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
-
     public LocalDateTime getUpdateDate() {
         return updateDate;
     }
@@ -96,4 +71,3 @@ public class Journal {
         this.updateDate = updateDate;
     }
 }
-

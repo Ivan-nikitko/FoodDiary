@@ -37,4 +37,83 @@ public class Profile {
     @Column
     private LocalDateTime updateDate;
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public ESex getSex() {
+        return sex;
+    }
+
+    public void setSex(ESex sex) {
+        this.sex = sex;
+    }
+
+    public EActivity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(EActivity activity) {
+        this.activity = activity;
+    }
+
+    public EPurpose getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(EPurpose purpose) {
+        this.purpose = purpose;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public User getUserCreator() {
+        return userCreator;
+    }
+
+    public void setUserCreator(User userCreator) {
+        this.userCreator = userCreator;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
+    }
 }
