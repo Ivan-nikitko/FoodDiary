@@ -58,9 +58,9 @@ public class ProductService implements IProductService {
         }
     }
 
-    public void delete(Product product, Long id) throws EmptyResultDataAccessException {
+    public void delete(Product product, Long id) throws EmptyResultDataAccessException,OptimisticLockException {
         Product dataBaseProduct = get(id);
-        if (product.getUpdateDate() != dataBaseProduct.getUpdateDate()) {
+        if (product.getUpdateDate().isEqual(dataBaseProduct.getUpdateDate())) {
             throw new OptimisticLockException("Product has already been changed");
         }else {
             productDAO.deleteById(id);

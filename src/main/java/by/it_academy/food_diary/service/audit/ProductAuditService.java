@@ -46,4 +46,49 @@ public class ProductAuditService {
             throw new RuntimeException("error with audit");
         }
     }
+
+    @After("execution(* by.it_academy.food_diary.service.ProductService.update(..))")
+    public void update(JoinPoint joinPoint) {
+        try {
+            Object[] args = joinPoint.getArgs();
+
+            Product arg = (Product) args[0];
+
+            Audit audit = new Audit();
+            audit.setCreationDate(arg.getUpdateDate());
+            audit.setDescription("Update product  " + arg.getId());
+            String login = userHolder.getAuthentication().getName();
+            User user = userService.findByLogin(login);
+            audit.setUser(user);
+            audit.setEssenceName("Product");
+            audit.setEssenceId(arg.getId());
+            auditService.save(audit);
+
+        } catch (Throwable e) {
+            throw new RuntimeException("error with audit");
+        }
+    }
+
+
+    @After("execution(* by.it_academy.food_diary.service.ProductService.delete(..))")
+    public void delete(JoinPoint joinPoint) {
+        try {
+            Object[] args = joinPoint.getArgs();
+
+            Product arg = (Product) args[0];
+
+            Audit audit = new Audit();
+            audit.setCreationDate(arg.getUpdateDate());
+            audit.setDescription("Delete product  " + arg.getId());
+            String login = userHolder.getAuthentication().getName();
+            User user = userService.findByLogin(login);
+            audit.setUser(user);
+            audit.setEssenceName("Product");
+            audit.setEssenceId(arg.getId());
+            auditService.save(audit);
+
+        } catch (Throwable e) {
+            throw new RuntimeException("error with audit");
+        }
+    }
 }

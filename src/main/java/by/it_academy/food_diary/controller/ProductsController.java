@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.OptimisticLockException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 
 @RestController
@@ -67,13 +69,17 @@ public class ProductsController {
     @DeleteMapping("/{id}/dt_update/{dt_update}")
     public ResponseEntity<?> delete(@RequestBody Product product,
                                     @PathVariable("id") Long id,
-                                    @PathVariable("dt_update") String dt_update) {
+                                    @PathVariable("dt_update") Long dtUpdate) {
         try {
-            product.setUpdateDate(LocalDateTime.parse(dt_update));
-            productService.delete(product,id);
+            product.setUpdateDate(millisecondsToLocalDateTime(dtUpdate));
+            productService.delete(product, id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    public LocalDateTime millisecondsToLocalDateTime(Long milliseconds) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.systemDefault());
     }
 }
