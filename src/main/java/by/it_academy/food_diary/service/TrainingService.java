@@ -2,6 +2,7 @@ package by.it_academy.food_diary.service;
 
 
 import by.it_academy.food_diary.controller.dto.TrainingByDateDto;
+import by.it_academy.food_diary.controller.dto.TrainingDto;
 import by.it_academy.food_diary.dao.api.ITrainingDao;
 import by.it_academy.food_diary.models.*;
 import by.it_academy.food_diary.service.api.ITrainingService;
@@ -11,8 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Service
 public class TrainingService implements ITrainingService {
@@ -24,28 +24,25 @@ public class TrainingService implements ITrainingService {
     }
 
     @Override
-    public TrainingByDateDto findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id) {
+    public TrainingByDateDto findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id, Pageable pageable) {
         TrainingByDateDto trainingByDateDto = new TrainingByDateDto();
-        List<Training> trainingList = new ArrayList<>();
         double sumOfCalories = 0;
-        List<Training> trainings = trainingDao.findAllByCreationDateBetweenAndProfileId(start, end, id);
+        Page<Training> trainings = trainingDao.findAllByCreationDateBetweenAndProfileId(start, end, id, pageable);
         for (Training training : trainings) {
-            trainingList.add(training);
             sumOfCalories += training.getCalories();
         }
-        trainingByDateDto.setTrainings(trainingList);
+        trainingByDateDto.setTrainings(trainings);
         trainingByDateDto.setSumOfCalories(sumOfCalories);
         return trainingByDateDto;
     }
 
     @Override
-    public void save(Training item) {
-
-    }
-
-    @Override
-    public Page<Training> getAll(Pageable pageable) {
-        return null;
+    public void save(TrainingDto trainingDto) {
+        Training training = new Training();
+        training.setProfile(trainingDto.getProfile());
+        training.setName(trainingDto.getName());
+        training.setCalories(trainingDto.getCalories());
+        trainingDao.save(training);
     }
 
     @Override
@@ -55,27 +52,25 @@ public class TrainingService implements ITrainingService {
     }
 
     @Override
-    public void update(Training updatedTraining, Long id) {
+    public void update(TrainingDto trainingDto, Long id) {
         Training trainingToUpdate = get(id);
-        if (updatedTraining.getUpdateDate() != trainingToUpdate.getUpdateDate()) {
-            throw new OptimisticLockException("Journal has already been changed");
-        } else {
-            trainingToUpdate.setName(updatedTraining.getName());
-            trainingToUpdate.setProfile(updatedTraining.getProfile());
-            trainingToUpdate.setCalories(updatedTraining.getCalories());
-            trainingToUpdate.setUpdateDate(LocalDateTime.now());
+        if (trainingDto.getUpdateDate().isEqual(trainingToUpdate.getUpdateDate())) {
+            trainingToUpdate.setName(trainingDto.getName());
+            trainingToUpdate.setProfile(trainingDto.getProfile());
+            trainingToUpdate.setCalories(trainingDto.getCalories());
             trainingDao.saveAndFlush(trainingToUpdate);
+        } else {
+            throw new OptimisticLockException("Training has already been changed");
         }
-
     }
 
     @Override
-    public void delete(Training training, Long id) {
+    public void delete(TrainingDto trainingDto, Long id) {
         Training dataBaseTraining = get(id);
-        if (training.getUpdateDate() != dataBaseTraining.getUpdateDate()) {
-            throw new OptimisticLockException("Product has already been changed");
-        } else {
+        if (trainingDto.getUpdateDate().isEqual(dataBaseTraining.getUpdateDate())) {
             trainingDao.deleteById(id);
+        } else {
+            throw new OptimisticLockException("Training has already been changed");
         }
 
     }

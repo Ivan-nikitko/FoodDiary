@@ -5,6 +5,10 @@ import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,21 +41,26 @@ public class UserController {
 	@PostMapping()
 	public ResponseEntity<String> login(@Valid @RequestBody LoginDto loginDto) {
 		String token = getJWTToken(loginDto.getLogin());
-		User user = new User();
-		user.setLogin(loginDto.getLogin());
-		user.setPassword(passwordEncoder.encode(loginDto.getPassword()));
-		user.setCreationDate(LocalDateTime.now());
-		userService.save(user);
+		userService.save(loginDto);
 		return new ResponseEntity<>(token,HttpStatus.CREATED);
 	}
-		
 
+
+
+
+	@GetMapping
+	public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "0") int page,
+									@RequestParam(value = "size", defaultValue = "2") int size){
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
+		Page<User> users = userService.getAll(pageable);
+		return new ResponseEntity<>(users, HttpStatus.OK);
+	}
 
 	private String getJWTToken(String username) {
 		String secretKey = "mySecretKey";
 		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
 				.commaSeparatedStringToAuthorityList("ROLE_USER");
-		
+
 		String token = Jwts
 				.builder()
 				.setId("softtekJWT")
@@ -80,5 +89,8 @@ public class UserController {
 		});
 		return errors;
 	}
+
+
+
 
 }

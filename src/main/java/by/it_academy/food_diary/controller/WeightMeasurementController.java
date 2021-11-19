@@ -1,12 +1,13 @@
 package by.it_academy.food_diary.controller;
 
+import by.it_academy.food_diary.controller.dto.WeightMeasurementByDateDto;
 import by.it_academy.food_diary.controller.dto.WeightMeasurementDto;
-import by.it_academy.food_diary.models.Profile;
 import by.it_academy.food_diary.models.WeightMeasurement;
+import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IProfileService;
 import by.it_academy.food_diary.service.api.IWeightMeasurementService;
+import by.it_academy.food_diary.utils.TimeUtil;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,91 +16,112 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.OptimisticLockException;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @RestController
 @RequestMapping("api/profile")
 public class WeightMeasurementController {
     private final IWeightMeasurementService weightMeasurementService;
     private final IProfileService profileService;
+    private final TimeUtil timeUtil;
+    private final UserHolder userHolder;
 
-    public WeightMeasurementController(IWeightMeasurementService weightMeasurementService, IProfileService profileService) {
+    public WeightMeasurementController(IWeightMeasurementService weightMeasurementService, IProfileService profileService, TimeUtil timeUtil, UserHolder userHolder) {
         this.weightMeasurementService = weightMeasurementService;
         this.profileService = profileService;
+        this.timeUtil = timeUtil;
+        this.userHolder = userHolder;
     }
 
     @GetMapping("/{id_profile}/journal/weight/")
     public ResponseEntity<?> show(@PathVariable("id_profile") Long idProfile,
                                   @RequestParam(value = "page", defaultValue = "0") int page,
                                   @RequestParam(value = "size", defaultValue = "2") int size,
-                                  @RequestParam (value = "dt_start") Long dateStartMilliseconds,
-                                  @RequestParam(value = "dt_end") Long dateEndMilliseconds) {
-        try {
-            Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
-            LocalDateTime startOfDate =
-                    LocalDateTime.ofInstant(Instant.ofEpochMilli(dateStartMilliseconds), ZoneId.systemDefault());
-            LocalDateTime endOfDate =
-                    LocalDateTime.ofInstant(Instant.ofEpochMilli(dateEndMilliseconds), ZoneId.systemDefault());
-            Page<WeightMeasurement> measurementPage = weightMeasurementService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile, pageable);
-            return new ResponseEntity<>(measurementPage, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+                                  @RequestParam(value = "dt_start") Long dateStartMicroseconds,
+                                  @RequestParam(value = "dt_end") Long dateEndMicroseconds
+    ) {
+        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+            try {
+                Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
+                LocalDateTime startOfDate = timeUtil.microsecondsToLocalDateTime(dateStartMicroseconds);
+                LocalDateTime endOfDate = timeUtil.microsecondsToLocalDateTime(dateEndMicroseconds);
+                WeightMeasurementByDateDto weightMeasurementByDateDto = weightMeasurementService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile, pageable);
+                return new ResponseEntity<>(weightMeasurementByDateDto, HttpStatus.OK);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-    @PostMapping("/{id_profile}/journal/weight")
-    public ResponseEntity<?> save(@RequestBody WeightMeasurement weightMeasurement,
-                                  @PathVariable("id_profile") Long idProfile) {
-        Profile profile = profileService.get(idProfile);
-        weightMeasurement.setProfile(profile);
-        weightMeasurement.setCreationDate(LocalDateTime.now());
-        weightMeasurement.setUpdateDate(weightMeasurement.getCreationDate());
-        weightMeasurementService.save(weightMeasurement);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        }
     }
 
     @GetMapping("/{id_profile}/journal/weight/{id_weight}")
     public ResponseEntity<?> showOne(@PathVariable("id_profile") Long idProfile,
                                      @PathVariable("id_weight") Long idWeight) {
-        try {
-            WeightMeasurement weightMeasurement = weightMeasurementService.get(idWeight);
-            return new ResponseEntity<>(weightMeasurement, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+            try {
+                WeightMeasurement weightMeasurement = weightMeasurementService.get(idWeight);
+                return new ResponseEntity<>(weightMeasurement, HttpStatus.OK);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @PostMapping("/{id_profile}/journal/weight")
+    public ResponseEntity<?> save(@RequestBody WeightMeasurementDto weightMeasurementDto,
+                                  @PathVariable("id_profile") Long idProfile) {
+        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+            weightMeasurementDto.setProfile(profileService.get(idProfile));
+            weightMeasurementService.save(weightMeasurementDto);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
     @PutMapping("/{id_profile}/journal/weight/{id_weight}/dt_update/{dt_update}")
-    public ResponseEntity<?> update(@RequestBody WeightMeasurement weightMeasurement,
+    public ResponseEntity<?> update(@RequestBody WeightMeasurementDto weightMeasurementDto,
                                     @PathVariable("id_profile") Long idProfile,
                                     @PathVariable("id_weight") Long idWeight,
-                                    @PathVariable("dt_update") Long dtUpdateMilliseconds) {
-        try {
-            LocalDateTime dtUpdate =
-                    LocalDateTime.ofInstant(Instant.ofEpochMilli(dtUpdateMilliseconds), ZoneId.systemDefault());
-            weightMeasurement.setUpdateDate(dtUpdate);
-            weightMeasurementService.update(weightMeasurement, idWeight);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (OptimisticLockException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+                                    @PathVariable("dt_update") Long dtUpdate) {
+        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+            try {
+                weightMeasurementDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
+                weightMeasurementService.update(weightMeasurementDto, idWeight);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } catch (OptimisticLockException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
     @DeleteMapping("/{id_profile}/journal/weight/{id_weight}/dt_update/{dt_update}")
-    public ResponseEntity<?> delete(@RequestBody WeightMeasurement weightMeasurement,
-                                    @PathVariable("id_profile") Long id_profile,
+    public ResponseEntity<?> delete(@RequestBody WeightMeasurementDto weightMeasurementDto,
+                                    @PathVariable("id_profile") Long idProfile,
                                     @PathVariable("id_weight") Long idWeight,
-                                    @PathVariable("dt_update") Long dtUpdateMilliseconds) {
+                                    @PathVariable("dt_update") Long dtUpdate) {
+        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
         try {
-            LocalDateTime dtUpdate =
-                    LocalDateTime.ofInstant(Instant.ofEpochMilli(dtUpdateMilliseconds), ZoneId.systemDefault());
-            weightMeasurement.setUpdateDate(dtUpdate);
-            weightMeasurementService.delete(weightMeasurement, idWeight);
+            weightMeasurementDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
+            weightMeasurementService.delete(weightMeasurementDto, idWeight);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private Boolean profileValidation(Long idProfile) {
+        return userHolder.getUser().getId() == profileService.get(idProfile).getUser().getId();
     }
 }

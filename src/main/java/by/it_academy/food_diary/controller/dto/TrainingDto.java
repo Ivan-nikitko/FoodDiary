@@ -1,29 +1,34 @@
 package by.it_academy.food_diary.controller.dto;
 
 import by.it_academy.food_diary.models.Profile;
-import by.it_academy.food_diary.models.User;
-import by.it_academy.food_diary.models.WeightMeasurement;
 
-import javax.persistence.Column;
-import javax.persistence.OneToOne;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
-public class WeightMeasurementDto {
+public class TrainingDto {
 
-    private double weight;
+    private String name;
+    private double calories;
 
     private Profile profile;
 
+
     private LocalDateTime updateDate;
 
-    public double getWeight() {
-        return weight;
+    public String getName() {
+        return name;
     }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getCalories() {
+        return calories;
+    }
+
+    public void setCalories(double calories) {
+        this.calories = calories;
     }
 
     public Profile getProfile() {

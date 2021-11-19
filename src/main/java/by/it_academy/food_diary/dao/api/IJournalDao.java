@@ -11,11 +11,6 @@ import java.util.List;
 
 public interface IJournalDao extends JpaRepository <Journal,Long>{
     Page<Journal> findByProfileId(Long id, Pageable pageable);
-    List<Journal> findByCreationDateIs(Integer day);
-
-
     List<Journal> findAllByCreationDateBetweenAndProfileId(LocalDateTime start, LocalDateTime end, Long id);
     List<Journal> findAllByProfileId(Long id);
-    List<Journal> findAllByCreationDateBetween(LocalDateTime start, LocalDateTime end);
-
 }

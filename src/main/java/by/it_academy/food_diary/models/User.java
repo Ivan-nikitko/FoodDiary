@@ -31,8 +31,14 @@ public class User {
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;
+    @Version
     private LocalDateTime updateDate;
 
+
+    public User() {
+        this.creationDate = LocalDateTime.now();
+        this.updateDate = creationDate;
+    }
 
     public long getId() {
         return id;

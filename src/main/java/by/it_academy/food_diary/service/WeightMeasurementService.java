@@ -1,5 +1,6 @@
 package by.it_academy.food_diary.service;
 
+import by.it_academy.food_diary.controller.dto.WeightMeasurementByDateDto;
 import by.it_academy.food_diary.controller.dto.WeightMeasurementDto;
 import by.it_academy.food_diary.dao.api.IWeightMeasurementDao;
 import by.it_academy.food_diary.models.WeightMeasurement;
@@ -21,11 +22,13 @@ public class WeightMeasurementService implements IWeightMeasurementService {
     }
 
     @Override
-    public void save(WeightMeasurement weightMeasurement) {
+    public void save(WeightMeasurementDto weightMeasurementDto) {
+        WeightMeasurement weightMeasurement = new WeightMeasurement();
+        weightMeasurement.setProfile(weightMeasurementDto.getProfile());
+        weightMeasurement.setWeight(weightMeasurementDto.getWeight());
         weightMeasurementDao.save(weightMeasurement);
     }
 
-    @Override
     public Page<WeightMeasurement> getAll(Pageable pageable) {
         return null;
     }
@@ -38,34 +41,34 @@ public class WeightMeasurementService implements IWeightMeasurementService {
     }
 
     @Override
-    public void update(WeightMeasurement updatedWeightMeasurement, Long id) {
+    public void update(WeightMeasurementDto weightMeasurementDto, Long id) {
         WeightMeasurement weightMeasurementToUpdate = get(id);
-        if (updatedWeightMeasurement.getUpdateDate() != weightMeasurementToUpdate.getUpdateDate()) {
-            throw new OptimisticLockException("Weight measurement has already been changed");
-        } else {
-            weightMeasurementToUpdate.setProfile(updatedWeightMeasurement.getProfile());
-            weightMeasurementToUpdate.setWeight(updatedWeightMeasurement.getWeight());
-            weightMeasurementToUpdate.setUpdateDate(LocalDateTime.now());
+        if (weightMeasurementDto.getUpdateDate().isEqual(weightMeasurementToUpdate.getUpdateDate())) {
+            weightMeasurementToUpdate.setProfile(weightMeasurementDto.getProfile());
+            weightMeasurementToUpdate.setWeight(weightMeasurementDto.getWeight());
             weightMeasurementDao.saveAndFlush(weightMeasurementToUpdate);
-        }
-
-    }
-
-    @Override
-    public void delete(WeightMeasurement weightMeasurement, Long id) {
-        WeightMeasurement dataBaseWeightMeasurement = get(id);
-        if (dataBaseWeightMeasurement.getUpdateDate() != dataBaseWeightMeasurement.getUpdateDate()) {
-            throw new OptimisticLockException("Weight measurement has already been changed");
         } else {
-            weightMeasurementDao.deleteById(id);
+            throw new OptimisticLockException("Weight measurement has already been changed");
         }
 
     }
 
     @Override
-    public Page <WeightMeasurement> findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id, Pageable pageable) {
+    public void delete(WeightMeasurementDto weightMeasurementDto, Long id) {
+        WeightMeasurement dataBaseWeightMeasurement = get(id);
+        if (weightMeasurementDto.getUpdateDate().isEqual(dataBaseWeightMeasurement.getUpdateDate())) {
+            weightMeasurementDao.deleteById(id);
+        } else {
+            throw new OptimisticLockException("Weight measurement has already been changed");
+        }
 
-       return weightMeasurementDao.findAllByCreationDateBetweenAndProfileId(start, end, id, pageable);
+    }
 
+    @Override
+    public WeightMeasurementByDateDto findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id, Pageable pageable) {
+        WeightMeasurementByDateDto weightMeasurementByDateDto = new WeightMeasurementByDateDto();
+        Page<WeightMeasurement> weightMeasurements = weightMeasurementDao.findAllByCreationDateBetweenAndProfileId(start, end, id, pageable);
+        weightMeasurementByDateDto.setWeightMeasurements(weightMeasurements);
+        return weightMeasurementByDateDto;
     }
 }

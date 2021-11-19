@@ -6,17 +6,27 @@ import java.time.LocalDateTime;
 @Entity
 public class WeightMeasurement {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
+    @Column
     private double weight;
     @OneToOne
+    @Column
     private Profile profile;
 
     @OneToOne
+    @Column
     private User userCreator;
+    @Column
     private LocalDateTime creationDate;
+    @Version
+    @Column
     private LocalDateTime updateDate;
+
+    public WeightMeasurement() {
+        this.creationDate = LocalDateTime.now();
+        this.updateDate = creationDate;
+    }
 
     public long getId() {
         return id;

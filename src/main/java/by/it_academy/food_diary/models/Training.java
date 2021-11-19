@@ -16,6 +16,7 @@ public class Training {
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;
+    @Version
     private LocalDateTime updateDate;
 
     public Long getId() {
