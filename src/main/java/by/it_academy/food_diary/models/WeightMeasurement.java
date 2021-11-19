@@ -11,11 +11,9 @@ public class WeightMeasurement {
     @Column
     private double weight;
     @OneToOne
-    @Column
     private Profile profile;
 
     @OneToOne
-    @Column
     private User userCreator;
     @Column
     private LocalDateTime creationDate;

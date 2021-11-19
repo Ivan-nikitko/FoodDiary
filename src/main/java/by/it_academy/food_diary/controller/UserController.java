@@ -41,7 +41,11 @@ public class UserController {
 	@PostMapping()
 	public ResponseEntity<String> login(@Valid @RequestBody LoginDto loginDto) {
 		String token = getJWTToken(loginDto.getLogin());
-		userService.save(loginDto);
+		try {
+			userService.save(loginDto);
+		}catch (IllegalArgumentException e){
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+		}
 		return new ResponseEntity<>(token,HttpStatus.CREATED);
 	}
 

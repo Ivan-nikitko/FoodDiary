@@ -8,5 +8,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IUserDao extends JpaRepository <User,Long>{
     User findByLogin(String login);
-  //  Page <User> (String name, Pageable pageable);
 }

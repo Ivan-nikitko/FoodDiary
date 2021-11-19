@@ -1,9 +1,9 @@
 package by.it_academy.food_diary.config;
 
-import by.it_academy.food_diary.controller.filters.JWTAuthorizationFilter;
+
+import by.it_academy.food_diary.controller.filters.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,28 +15,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final JwtFilter jwtFilter ;
+
+    WebSecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/user").permitAll()
-                .anyRequest().authenticated();
-    }
-/*
-     .httpBasic().disable()
+        http
+                .httpBasic().disable()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
                 .authorizeRequests()
                 .antMatchers("/admin/*").hasRole("ADMIN")
                 .antMatchers("/user/*").hasRole("USER")
                 .antMatchers("/register", "/auth").permitAll()
                 .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);*/
-
-
-
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    }
 
 
     @Bean

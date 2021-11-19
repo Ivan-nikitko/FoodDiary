@@ -12,8 +12,6 @@ public interface IUserService  {
     User findByLogin(String login);
     void save(LoginDto loginDto);
     Page<User> getAll (Pageable pageable);
-    User get(Long id);
-    void update(UserDto userDto, Long id);
 
 
 }
