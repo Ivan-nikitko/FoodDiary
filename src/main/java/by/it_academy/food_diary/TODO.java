@@ -6,9 +6,7 @@ public interface TODO {
     //TODO exceptions
     //TODO business
     //TODO audit
-    //TODO @versions
     //TODO addEmail
     //TODO registration/login
-    //TODO Blocking
-    //TODO Validate
+    //TODO Validate remove @Email
 }

@@ -30,7 +30,7 @@ public class AuthController {
     @PostMapping("/auth")
     public String auth(@RequestBody LoginDto loginDto) {
         User userEntity = userService.findByLoginAndPassword(loginDto.getLogin(), loginDto.getPassword());
-        String token = "Bearer "+jwtProvider.generateToken(userEntity.getLogin());
+        String token =jwtProvider.generateToken(userEntity.getLogin());
         return token;
     }
 }
