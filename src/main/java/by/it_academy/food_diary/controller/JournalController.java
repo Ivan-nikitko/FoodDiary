@@ -3,6 +3,8 @@ package by.it_academy.food_diary.controller;
 import by.it_academy.food_diary.controller.dto.JournalByDateDto;
 import by.it_academy.food_diary.controller.dto.JournalDto;
 import by.it_academy.food_diary.models.Journal;
+import by.it_academy.food_diary.models.Profile;
+import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IJournalService;
 import by.it_academy.food_diary.service.api.IProfileService;
@@ -45,12 +47,15 @@ public class JournalController {
                                    @RequestParam(value = "page", defaultValue = "0") int page,
                                    @RequestParam(value = "size", defaultValue = "2") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
-            Page<Journal> journals = journalService.getAllByProfileId(pageable, idProfile);
-            return new ResponseEntity<>(journals, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        try {
+            if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+                Page<Journal> journals = journalService.getAllByProfileId(pageable, idProfile);
+                return new ResponseEntity<>(journals, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -74,18 +79,15 @@ public class JournalController {
                                      @PathVariable("day") Long day) {
 
         if (Boolean.TRUE.equals(profileValidation(idProfile))) {
-            try {
-                long dayInMilliseconds = TimeUnit.DAYS.toMillis(day);
-                LocalDateTime date =
-                        LocalDateTime.ofInstant(Instant.ofEpochMilli(dayInMilliseconds), ZoneId.systemDefault());
-                LocalDateTime endOfDate = date.with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
-                LocalDateTime startOfDate = endOfDate.minusDays(1L);
 
-                JournalByDateDto journalByDateDto = journalService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile);
-                return new ResponseEntity<>(journalByDateDto, HttpStatus.OK);
-            } catch (IllegalArgumentException e) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            long dayInMilliseconds = TimeUnit.DAYS.toMillis(day);
+            LocalDateTime date =
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(dayInMilliseconds), ZoneId.systemDefault());
+            LocalDateTime endOfDate = date.with(ChronoField.NANO_OF_DAY, LocalTime.MAX.toNanoOfDay());
+            LocalDateTime startOfDate = endOfDate.minusDays(1L);
+
+            JournalByDateDto journalByDateDto = journalService.findAllByProfileIdAndCreationDate(startOfDate, endOfDate, idProfile);
+            return new ResponseEntity<>(journalByDateDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -133,16 +135,22 @@ public class JournalController {
                 journalDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
                 journalService.delete(journalDto, idFood);
                 return new ResponseEntity<>(HttpStatus.OK);
+            } catch (OptimisticLockException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
             } catch (IllegalArgumentException e) {
-                return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
             }
-        }else {
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
     private Boolean profileValidation(Long idProfile) {
-        return userHolder.getUser().getId() == profileService.get(idProfile).getUser().getId();
+        try {
+            return userHolder.getUser().getId() == profileService.get(idProfile).getUser().getId();
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
 }

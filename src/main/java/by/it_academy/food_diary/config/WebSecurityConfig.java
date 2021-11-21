@@ -28,12 +28,13 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .csrf().disable()
                 .authorizeRequests()
-
-                .antMatchers("/api/*").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET,"/api/product/*","/api/recipe/*").hasRole("USER")
-                .antMatchers("/api/profile/").hasRole("USER")
+                .antMatchers(HttpMethod.GET,"/api/product/**","/api/recipe/**","/api/profile/**").hasAnyRole("ADMIN","USER")
+                .antMatchers(HttpMethod.POST,"/api/product/**","/api/recipe/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/api/product/**","/api/recipe/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/api/product/**","/api/recipe/**").hasRole("ADMIN")
+              //  .antMatchers(HttpMethod.GET,"/api/product/*","/api/recipe/*").hasRole("USER")
+              //  .antMatchers("/api/profile/").hasRole("USER")
                 .antMatchers("/register", "/auth").anonymous()
-
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

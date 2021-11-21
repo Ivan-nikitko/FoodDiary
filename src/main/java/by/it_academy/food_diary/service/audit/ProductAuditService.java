@@ -24,7 +24,7 @@ public class ProductAuditService {
         this.userService = userService;
         this.userHolder = userHolder;
     }
-
+/*
     @After("execution(* by.it_academy.food_diary.service.ProductService.save(..))")
     public void save(JoinPoint joinPoint) {
         try {
@@ -45,7 +45,8 @@ public class ProductAuditService {
         } catch (Throwable e) {
             throw new RuntimeException("error with audit");
         }
-    }
+    }*/
+/*
 
     @After("execution(* by.it_academy.food_diary.service.ProductService.update(..))")
     public void update(JoinPoint joinPoint) {
@@ -68,9 +69,10 @@ public class ProductAuditService {
             throw new RuntimeException("error with audit");
         }
     }
+*/
 
 
-    @After("execution(* by.it_academy.food_diary.service.ProductService.delete(..))")
+  /*  @After("execution(* by.it_academy.food_diary.service.ProductService.delete(..))")
     public void delete(JoinPoint joinPoint) {
         try {
             Object[] args = joinPoint.getArgs();
@@ -90,5 +92,5 @@ public class ProductAuditService {
         } catch (Throwable e) {
             throw new RuntimeException("error with audit");
         }
-    }
+    }*/
 }

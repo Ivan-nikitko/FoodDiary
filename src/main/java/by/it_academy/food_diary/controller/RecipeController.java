@@ -2,7 +2,6 @@ package by.it_academy.food_diary.controller;
 
 import by.it_academy.food_diary.controller.dto.RecipeDto;
 import by.it_academy.food_diary.models.Recipe;
-import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IRecipeService;
 import by.it_academy.food_diary.utils.TimeUtil;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,19 +14,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.OptimisticLockException;
-import java.time.LocalDateTime;
+import java.sql.SQLException;
 
 @RestController
 @RequestMapping("/api/recipe")
 public class RecipeController {
 
     private final IRecipeService recipeService;
-    private final UserHolder userHolder;
     private final TimeUtil timeUtil;
 
-    public RecipeController(IRecipeService recipeService, UserHolder userHolder, TimeUtil timeUtil) {
+    public RecipeController(IRecipeService recipeService, TimeUtil timeUtil) {
         this.recipeService = recipeService;
-        this.userHolder = userHolder;
         this.timeUtil = timeUtil;
     }
 
@@ -51,13 +48,13 @@ public class RecipeController {
             Recipe recipe = recipeService.get(id);
             return new ResponseEntity<>(recipe, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @PostMapping
     public ResponseEntity<?> save(@RequestBody RecipeDto recipeDto) {
-        recipeService.save(recipeDto);
+            recipeService.save(recipeDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -72,7 +69,7 @@ public class RecipeController {
         } catch (OptimisticLockException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -84,8 +81,10 @@ public class RecipeController {
             recipeDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
             recipeService.delete(recipeDto, id);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        } catch (OptimisticLockException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }

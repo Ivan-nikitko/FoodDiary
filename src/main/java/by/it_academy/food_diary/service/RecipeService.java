@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -27,7 +28,7 @@ public class RecipeService implements IRecipeService {
     }
 
     @Override
-    public void save(RecipeDto recipeDto) {
+    public void save(RecipeDto recipeDto)  {
         Recipe recipe = new Recipe();
         recipe.setUserCreator(userHolder.getUser());
         List<Ingredient> ingredients = recipeDto.getIngredients();
@@ -59,9 +60,16 @@ public class RecipeService implements IRecipeService {
     @Override
     public void update(RecipeDto recipeDto, Long id) {
         Recipe recipeToUpdate = get(id);
+        if (recipeToUpdate == null) {
+            throw new IllegalArgumentException("Recipe not found");
+        }
         if (recipeDto.getUpdateDate().isEqual(recipeToUpdate.getUpdateDate())) {
             recipeToUpdate.setName(recipeDto.getName());
-            recipeToUpdate.setIngredients(recipeDto.getIngredients());
+            List<Ingredient> ingredients = recipeDto.getIngredients();
+            for (Ingredient ingredient : ingredients) {
+                ingredientDao.save(ingredient);
+            }
+            recipeToUpdate.setIngredients(ingredients);
             recipeDao.saveAndFlush(recipeToUpdate);
         }else {
             throw new OptimisticLockException("Recipe has already been changed");
@@ -71,6 +79,9 @@ public class RecipeService implements IRecipeService {
     @Override
     public void delete(RecipeDto recipeDto,Long id) {
         Recipe dataBaseRecipe = get(id);
+        if (dataBaseRecipe == null) {
+            throw new IllegalArgumentException("Recipe not found");
+        }
         if (recipeDto.getUpdateDate().isEqual(dataBaseRecipe.getUpdateDate())) {
             recipeDao.deleteById(id);
         }else {

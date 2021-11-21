@@ -44,9 +44,9 @@ public class Initializer {
         this.recipeDao = recipeDao;
         this.ingredientDao = ingredientDao;
         this.passwordEncoder = passwordEncoder;
-        generateAdmin();
-        generateProducts();
-        generateRecipes();
+//        generateAdmin();
+//        generateProducts();
+//        generateRecipes();
     }
 
 

@@ -3,6 +3,7 @@ package by.it_academy.food_diary.controller;
 import by.it_academy.food_diary.controller.dto.ProductDto;
 import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.service.ProductService;
+import by.it_academy.food_diary.service.api.IProductService;
 import by.it_academy.food_diary.utils.TimeUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -68,7 +69,7 @@ public class ProductsController {
         } catch (OptimisticLockException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -80,6 +81,8 @@ public class ProductsController {
             productDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
             productService.delete(productDto, id);
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (OptimisticLockException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }

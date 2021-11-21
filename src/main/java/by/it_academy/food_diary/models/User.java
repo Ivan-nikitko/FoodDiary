@@ -38,6 +38,7 @@ public class User {
     public User() {
         this.creationDate = LocalDateTime.now();
         this.updateDate = creationDate;
+        this.status = EStatus.INACTIVE;
     }
 
     public long getId() {

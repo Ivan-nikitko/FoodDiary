@@ -48,14 +48,16 @@ public class ProductService implements IProductService {
     }
 
     public Product get(Long id) {
-        return productDAO.findById(id).orElseThrow(
+       return productDAO.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("Product not found")
         );
     }
 
-    public void update(ProductDto productDto, Long id) {
-        Product productToUpdate = get(id);
+    public void update(ProductDto productDto, Long id) {Product productToUpdate = get(id);
 
+        if (productToUpdate == null) {
+            throw new IllegalArgumentException("Product not found");
+        }
         if (productDto.getUpdateDate().isEqual(productToUpdate.getUpdateDate())) {
             productToUpdate.setName(productDto.getName());
             productToUpdate.setBrand(productDto.getBrand());
