@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.OptimisticLockException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api/profile")
@@ -40,7 +41,7 @@ public class WeightMeasurementController {
                                   @RequestParam(value = "dt_start") Long dateStartMicroseconds,
                                   @RequestParam(value = "dt_end") Long dateEndMicroseconds
     ) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+        if (Boolean.TRUE.equals(profileCheck(idProfile))) {
             try {
                 Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
                 LocalDateTime startOfDate = timeUtil.microsecondsToLocalDateTime(dateStartMicroseconds);
@@ -59,22 +60,24 @@ public class WeightMeasurementController {
     @GetMapping("/{id_profile}/journal/weight/{id_weight}")
     public ResponseEntity<?> showOne(@PathVariable("id_profile") Long idProfile,
                                      @PathVariable("id_weight") Long idWeight) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
-            try {
+        try {
+            if (Boolean.TRUE.equals(profileCheck(idProfile, idWeight))) {
                 WeightMeasurement weightMeasurement = weightMeasurementService.get(idWeight);
                 return new ResponseEntity<>(weightMeasurement, HttpStatus.OK);
-            } catch (IllegalArgumentException e) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+
     }
+
 
     @PostMapping("/{id_profile}/journal/weight")
     public ResponseEntity<?> save(@RequestBody WeightMeasurementDto weightMeasurementDto,
                                   @PathVariable("id_profile") Long idProfile) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+        if (Boolean.TRUE.equals(profileCheck(idProfile))) {
             weightMeasurementDto.setProfile(profileService.get(idProfile));
             weightMeasurementService.save(weightMeasurementDto);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -88,18 +91,19 @@ public class WeightMeasurementController {
                                     @PathVariable("id_profile") Long idProfile,
                                     @PathVariable("id_weight") Long idWeight,
                                     @PathVariable("dt_update") Long dtUpdate) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
-            try {
+        try {
+            if (Boolean.TRUE.equals(profileCheck(idProfile, idWeight))) {
                 weightMeasurementDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
+                weightMeasurementDto.setProfile(profileService.get(idProfile));
                 weightMeasurementService.update(weightMeasurementDto, idWeight);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } catch (OptimisticLockException e) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-            } catch (IllegalArgumentException e) {
-                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } catch (OptimisticLockException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -108,20 +112,39 @@ public class WeightMeasurementController {
                                     @PathVariable("id_profile") Long idProfile,
                                     @PathVariable("id_weight") Long idWeight,
                                     @PathVariable("dt_update") Long dtUpdate) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
-        try {
-            weightMeasurementDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
-            weightMeasurementService.delete(weightMeasurementDto, idWeight);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (EmptyResultDataAccessException e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
-        }
+        if (Boolean.TRUE.equals(profileCheck(idProfile,idWeight))) {
+            try {
+                weightMeasurementDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
+                weightMeasurementService.delete(weightMeasurementDto, idWeight);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } catch (OptimisticLockException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
-    private Boolean profileValidation(Long idProfile) {
-        return userHolder.getUser().getId() == profileService.get(idProfile).getUser().getId();
+
+    private Boolean profileCheck(Long idProfile, Long idActive) {
+        try {
+            long userHolderId = userHolder.getUser().getId();
+            long userProfileId = profileService.get(idProfile).getUser().getId();
+            Long trainingProfileId = weightMeasurementService.get(idActive).getProfile().getId();
+            return userHolderId == userProfileId && Objects.equals(trainingProfileId, idProfile);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+
+    private Boolean profileCheck(Long idProfile) {
+        try {
+            return userHolder.getUser().getId() == profileService.get(idProfile).getUser().getId();
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

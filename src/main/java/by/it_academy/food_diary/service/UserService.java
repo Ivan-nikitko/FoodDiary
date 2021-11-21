@@ -53,5 +53,12 @@ public class UserService implements IUserService {
         return userDao.findAll(pageable);
     }
 
+    @Override
+    public User findById(Long id) {
+        return userDao.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("User not found")
+        );
+    }
+
 
 }

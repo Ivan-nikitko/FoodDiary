@@ -5,6 +5,7 @@ import by.it_academy.food_diary.controller.dto.TrainingByDateDto;
 import by.it_academy.food_diary.controller.dto.TrainingDto;
 import by.it_academy.food_diary.dao.api.ITrainingDao;
 import by.it_academy.food_diary.models.*;
+import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.ITrainingService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +19,12 @@ import java.time.LocalDateTime;
 public class TrainingService implements ITrainingService {
 
     private final ITrainingDao trainingDao;
+    private final UserHolder userHolder;
 
-    public TrainingService(ITrainingDao trainingDao) {
+
+    public TrainingService(ITrainingDao trainingDao, UserHolder userHolder) {
         this.trainingDao = trainingDao;
+        this.userHolder = userHolder;
     }
 
     @Override
@@ -39,6 +43,7 @@ public class TrainingService implements ITrainingService {
     @Override
     public void save(TrainingDto trainingDto) {
         Training training = new Training();
+        training.setUserCreator(userHolder.getUser());
         training.setProfile(trainingDto.getProfile());
         training.setName(trainingDto.getName());
         training.setCalories(trainingDto.getCalories());

@@ -19,6 +19,11 @@ public class Training {
     @Version
     private LocalDateTime updateDate;
 
+    public Training() {
+        this.creationDate = LocalDateTime.now();
+        this.updateDate = creationDate;
+    }
+
     public Long getId() {
         return id;
     }

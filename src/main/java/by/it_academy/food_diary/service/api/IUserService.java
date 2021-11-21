@@ -12,6 +12,6 @@ public interface IUserService  {
     User findByLogin(String login);
     void save(LoginDto loginDto);
     Page<User> getAll (Pageable pageable);
-
+    User findById (Long id);
 
 }

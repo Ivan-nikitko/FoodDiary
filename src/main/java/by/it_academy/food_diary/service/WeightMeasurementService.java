@@ -4,6 +4,7 @@ import by.it_academy.food_diary.controller.dto.WeightMeasurementByDateDto;
 import by.it_academy.food_diary.controller.dto.WeightMeasurementDto;
 import by.it_academy.food_diary.dao.api.IWeightMeasurementDao;
 import by.it_academy.food_diary.models.WeightMeasurement;
+import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IWeightMeasurementService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,14 +17,17 @@ import java.time.LocalDateTime;
 public class WeightMeasurementService implements IWeightMeasurementService {
 
     private final IWeightMeasurementDao weightMeasurementDao;
+    private final UserHolder userHolder;
 
-    public WeightMeasurementService(IWeightMeasurementDao weightMeasurementDao) {
+    public WeightMeasurementService(IWeightMeasurementDao weightMeasurementDao, UserHolder userHolder) {
         this.weightMeasurementDao = weightMeasurementDao;
+        this.userHolder = userHolder;
     }
 
     @Override
     public void save(WeightMeasurementDto weightMeasurementDto) {
         WeightMeasurement weightMeasurement = new WeightMeasurement();
+        weightMeasurement.setUserCreator(userHolder.getUser());
         weightMeasurement.setProfile(weightMeasurementDto.getProfile());
         weightMeasurement.setWeight(weightMeasurementDto.getWeight());
         weightMeasurementDao.save(weightMeasurement);
