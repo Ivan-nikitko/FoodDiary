@@ -7,7 +7,6 @@ import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IProfileService;
 import by.it_academy.food_diary.service.api.IWeightMeasurementService;
 import by.it_academy.food_diary.utils.TimeUtil;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -78,7 +77,7 @@ public class WeightMeasurementController {
     public ResponseEntity<?> save(@RequestBody WeightMeasurementDto weightMeasurementDto,
                                   @PathVariable("id_profile") Long idProfile) {
         if (Boolean.TRUE.equals(profileCheck(idProfile))) {
-            weightMeasurementDto.setProfile(profileService.get(idProfile));
+            weightMeasurementDto.setProfile(profileService.findById(idProfile));
             weightMeasurementService.save(weightMeasurementDto);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
@@ -94,7 +93,7 @@ public class WeightMeasurementController {
         try {
             if (Boolean.TRUE.equals(profileCheck(idProfile, idWeight))) {
                 weightMeasurementDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
-                weightMeasurementDto.setProfile(profileService.get(idProfile));
+                weightMeasurementDto.setProfile(profileService.findById(idProfile));
                 weightMeasurementService.update(weightMeasurementDto, idWeight);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -131,7 +130,7 @@ public class WeightMeasurementController {
     private Boolean profileCheck(Long idProfile, Long idActive) {
         try {
             long userHolderId = userHolder.getUser().getId();
-            long userProfileId = profileService.get(idProfile).getUser().getId();
+            long userProfileId = profileService.findById(idProfile).getUser().getId();
             Long trainingProfileId = weightMeasurementService.get(idActive).getProfile().getId();
             return userHolderId == userProfileId && Objects.equals(trainingProfileId, idProfile);
         } catch (IllegalArgumentException e) {
@@ -142,7 +141,7 @@ public class WeightMeasurementController {
 
     private Boolean profileCheck(Long idProfile) {
         try {
-            return userHolder.getUser().getId() == profileService.get(idProfile).getUser().getId();
+            return userHolder.getUser().getId() == profileService.findById(idProfile).getUser().getId();
         } catch (IllegalArgumentException e) {
             return false;
         }

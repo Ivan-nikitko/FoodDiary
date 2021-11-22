@@ -33,7 +33,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT,"/api/product/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE,"/api/product/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST,"/api/recipe/**").hasAnyRole("ADMIN","USER")
-                .antMatchers(HttpMethod.PUT,"/api/recipe/**").hasAnyRole("ADMIN","USER")
+                .antMatchers(HttpMethod.PUT,"/api/recipe/**","/api/user/**").hasAnyRole("ADMIN","USER")
                 .antMatchers(HttpMethod.DELETE,"/api/recipe/**").hasAnyRole("ADMIN","USER")
                 .antMatchers("/register", "/auth","/activate/**").anonymous()
                 .anyRequest().authenticated()

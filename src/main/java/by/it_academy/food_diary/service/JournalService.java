@@ -34,7 +34,8 @@ public class JournalService implements IJournalService {
         journal.setRecipe(journalDto.getRecipe());
         journal.setMeasure(journalDto.getMeasure());
         journal.setMealTime(journalDto.getMealTime());
-        journalDao.save(journal);
+        Journal savedJournal = journalDao.save(journal);
+        journalDto.setId(savedJournal.getId());
     }
 
     @Override
@@ -106,6 +107,7 @@ public class JournalService implements IJournalService {
             journalToUpdate.setMeasure(journalDto.getMeasure());
             journalToUpdate.setMealTime(journalDto.getMealTime());
             journalDao.saveAndFlush(journalToUpdate);
+            journalDto.setId(id);
         } else {
             throw new OptimisticLockException("Journal has already been changed");
         }
@@ -114,8 +116,12 @@ public class JournalService implements IJournalService {
     @Override
     public void delete(JournalDto journalDto, Long id) {
         Journal dataBaseJournal = get(id);
+        if (dataBaseJournal == null) {
+            throw new IllegalArgumentException("Journal not found");
+        }
         if (journalDto.getUpdateDate().isEqual(dataBaseJournal.getUpdateDate())) {
             journalDao.deleteById(id);
+            journalDto.setId(id);
         } else {
             throw new OptimisticLockException("Journal has already been changed");
         }

@@ -47,7 +47,8 @@ public class TrainingService implements ITrainingService {
         training.setProfile(trainingDto.getProfile());
         training.setName(trainingDto.getName());
         training.setCalories(trainingDto.getCalories());
-        trainingDao.save(training);
+        Training savedTraining = trainingDao.save(training);
+        trainingDto.setId(savedTraining.getId());
     }
 
     @Override
@@ -64,6 +65,7 @@ public class TrainingService implements ITrainingService {
             trainingToUpdate.setProfile(trainingDto.getProfile());
             trainingToUpdate.setCalories(trainingDto.getCalories());
             trainingDao.saveAndFlush(trainingToUpdate);
+            trainingDto.setId(id);
         } else {
             throw new OptimisticLockException("Training has already been changed");
         }
@@ -72,8 +74,12 @@ public class TrainingService implements ITrainingService {
     @Override
     public void delete(TrainingDto trainingDto, Long id) {
         Training dataBaseTraining = get(id);
+        if (dataBaseTraining == null) {
+            throw new IllegalArgumentException("Training not found");
+        }
         if (trainingDto.getUpdateDate().isEqual(dataBaseTraining.getUpdateDate())) {
             trainingDao.deleteById(id);
+            trainingDto.setId(id);
         } else {
             throw new OptimisticLockException("Training has already been changed");
         }

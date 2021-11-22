@@ -7,12 +7,20 @@ import java.util.List;
 
 public class RecipeDto {
 
-
+    private Long id;
     private String name;
 
     private List<Ingredient> ingredients;
 
     private LocalDateTime updateDate;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

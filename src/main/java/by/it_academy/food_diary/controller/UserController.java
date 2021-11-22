@@ -1,30 +1,19 @@
 package by.it_academy.food_diary.controller;
 
-import by.it_academy.food_diary.controller.dto.LoginDto;
+import by.it_academy.food_diary.controller.dto.UserDto;
 import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.service.UserService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import by.it_academy.food_diary.utils.TimeUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import javax.persistence.OptimisticLockException;
 
 @RestController
 @RequestMapping("/api/user")
@@ -32,21 +21,27 @@ public class UserController {
 
 	private final UserService userService;
 	private PasswordEncoder passwordEncoder;
+	private final TimeUtil timeUtil;
 
-	public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+	public UserController(UserService userService, PasswordEncoder passwordEncoder, TimeUtil timeUtil) {
 		this.userService = userService;
 		this.passwordEncoder = passwordEncoder;
+		this.timeUtil = timeUtil;
 	}
 
-	@PostMapping()
-	public ResponseEntity<String> login(@Valid @RequestBody LoginDto loginDto) {
-		String token = getJWTToken(loginDto.getLogin());
+	@PutMapping("/{id}/dt_update/{dt_update}")
+	public ResponseEntity<?> update(@RequestBody UserDto userDto,
+									@PathVariable("id") Long id,
+									@PathVariable("dt_update") Long dtUpdate){
 		try {
-			userService.save(loginDto);
-		}catch (IllegalArgumentException e){
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+			userDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
+			userService.update(userDto, id);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (OptimisticLockException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+		} catch (IllegalArgumentException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(token,HttpStatus.CREATED);
 	}
 
 
@@ -59,6 +54,7 @@ public class UserController {
 		Page<User> users = userService.getAll(pageable);
 		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
+/*
 
 	private String getJWTToken(String username) {
 		String secretKey = "mySecretKey";
@@ -94,6 +90,7 @@ public class UserController {
 		return errors;
 	}
 
+*/
 
 
 

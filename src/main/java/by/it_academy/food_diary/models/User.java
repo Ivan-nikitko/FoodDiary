@@ -16,16 +16,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column
- //   @NotBlank(message = "Name is mandatory")
     private String name;
-    @Column(unique=true)
-    @Email(message = "Email should be valid")
-    @NotBlank(message = "Email is mandatory")
+    @Column
     private String login;
+    @Column
     private String password;
+    @Column
     private ERole role;
+    @Column
     private EStatus status;
-
 
 
     @OneToOne

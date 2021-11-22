@@ -6,7 +6,6 @@ public interface TODO {
     //TODO exceptions
     //TODO business
     //TODO audit
-    //TODO addEmail
     //TODO registration/login
     //TODO Validate remove @Email
     //TODO Erroe creation recipe with nonexistent product

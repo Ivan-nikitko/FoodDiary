@@ -1,46 +1,25 @@
-package by.it_academy.food_diary.models;
+package by.it_academy.food_diary.controller.dto;
 
+import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.models.api.EActivity;
 import by.it_academy.food_diary.models.api.EPurpose;
 import by.it_academy.food_diary.models.api.ESex;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-public class Profile {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProfileDto {
+
     private Long id;
-    @OneToOne
     private User user;
-    @Column
     private double height;
-    @Column
     private double weight;
-    @Column
     private ESex sex;
-    @Column
     private EActivity activity;
-    @Column
     private EPurpose purpose;
-    @Column(name = "dateOfBirth")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate dateOfBirth;
-
-    @OneToOne
     private User userCreator;
-    @Column
     private LocalDateTime creationDate;
-    @Column
     private LocalDateTime updateDate;
-
-    public Profile() {
-        this.creationDate = LocalDateTime.now();
-        this.updateDate = creationDate;
-    }
 
     public Long getId() {
         return id;

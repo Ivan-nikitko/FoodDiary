@@ -6,13 +6,21 @@ import by.it_academy.food_diary.models.api.EStatus;
 import java.time.LocalDateTime;
 
 public class UserDto {
-
+    private Long id;
     private String name;
     private String login;
     private String password;
     private ERole role;
     private EStatus status;
     private LocalDateTime updateDate;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

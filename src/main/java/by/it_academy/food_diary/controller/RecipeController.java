@@ -67,7 +67,7 @@ public class RecipeController {
             recipeService.update(recipeDto, id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (OptimisticLockException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AuditService implements IAuditService {
     private IAuditDao auditDao;
@@ -21,22 +23,20 @@ public class AuditService implements IAuditService {
     }
 
     @Override
-    public Page<Audit> getAll(Pageable pageable) {
-        return auditDao.findAll(pageable);
+    public List<Audit> getAll() {
+        return auditDao.findAll();
+    }
+
+
+    public List<Audit> getAll(Long id) {
+        return auditDao.findAllById(id);
     }
 
     @Override
-    public Audit get(Long aLong) {
-        return null;
+    public Audit get(Long id){
+        return auditDao.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Audit not found"));
     }
 
-    @Override
-    public void update(Audit item, Long aLong) {
 
-    }
-
-    @Override
-    public void delete(Audit audit,Long aLong) {
-
-    }
 }

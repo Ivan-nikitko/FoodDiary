@@ -30,7 +30,8 @@ public class WeightMeasurementService implements IWeightMeasurementService {
         weightMeasurement.setUserCreator(userHolder.getUser());
         weightMeasurement.setProfile(weightMeasurementDto.getProfile());
         weightMeasurement.setWeight(weightMeasurementDto.getWeight());
-        weightMeasurementDao.save(weightMeasurement);
+        WeightMeasurement savedWeightMeasurement = weightMeasurementDao.save(weightMeasurement);
+        weightMeasurementDto.setId(savedWeightMeasurement.getId());
     }
 
     public Page<WeightMeasurement> getAll(Pageable pageable) {
@@ -51,6 +52,7 @@ public class WeightMeasurementService implements IWeightMeasurementService {
             weightMeasurementToUpdate.setProfile(weightMeasurementDto.getProfile());
             weightMeasurementToUpdate.setWeight(weightMeasurementDto.getWeight());
             weightMeasurementDao.saveAndFlush(weightMeasurementToUpdate);
+            weightMeasurementDto.setId(id);
         } else {
             throw new OptimisticLockException("Weight measurement has already been changed");
         }
@@ -60,8 +62,12 @@ public class WeightMeasurementService implements IWeightMeasurementService {
     @Override
     public void delete(WeightMeasurementDto weightMeasurementDto, Long id) {
         WeightMeasurement dataBaseWeightMeasurement = get(id);
+        if (dataBaseWeightMeasurement == null) {
+            throw new IllegalArgumentException("Weight measurement not found");
+        }
         if (weightMeasurementDto.getUpdateDate().isEqual(dataBaseWeightMeasurement.getUpdateDate())) {
             weightMeasurementDao.deleteById(id);
+            weightMeasurementDto.setId(id);
         } else {
             throw new OptimisticLockException("Weight measurement has already been changed");
         }

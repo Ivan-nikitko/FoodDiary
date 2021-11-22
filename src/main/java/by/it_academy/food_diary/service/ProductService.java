@@ -36,7 +36,8 @@ public class ProductService implements IProductService {
         product.setCarbonates(productDto.getCarbonates());
         product.setMeasure(productDto.getMeasure());
         product.setCalories(product.getCalories());
-        productDAO.save(product);
+        Product savedProduct = productDAO.save(product);
+        productDto.setId(savedProduct.getId());
     }
 
     public Page<Product> getAll(Pageable pageable) {
@@ -53,8 +54,8 @@ public class ProductService implements IProductService {
         );
     }
 
-    public void update(ProductDto productDto, Long id) {Product productToUpdate = get(id);
-
+    public void update(ProductDto productDto, Long id) {
+        Product productToUpdate = get(id);
         if (productToUpdate == null) {
             throw new IllegalArgumentException("Product not found");
         }
@@ -67,6 +68,7 @@ public class ProductService implements IProductService {
             productToUpdate.setMeasure(productDto.getMeasure());
             productToUpdate.setCalories(productDto.getCalories());
             productDAO.saveAndFlush(productToUpdate);
+            productDto.setId(id);
         } else {
             throw new OptimisticLockException("Product has already been changed");
         }
@@ -74,8 +76,12 @@ public class ProductService implements IProductService {
 
     public void delete(ProductDto productDto, Long id) throws EmptyResultDataAccessException, OptimisticLockException {
         Product dataBaseProduct = get(id);
+        if (dataBaseProduct == null) {
+            throw new IllegalArgumentException("Recipe not found");
+        }
         if (productDto.getUpdateDate().isEqual(dataBaseProduct.getUpdateDate())) {
             productDAO.deleteById(id);
+            productDto.setId(id);
         } else {
             throw new OptimisticLockException("Product has already been changed");
         }

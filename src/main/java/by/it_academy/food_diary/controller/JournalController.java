@@ -97,7 +97,7 @@ public class JournalController {
     public ResponseEntity<?> save(@RequestBody JournalDto journalDto,
                                   @PathVariable("id_profile") Long idProfile) {
         if (Boolean.TRUE.equals(profileValidation(idProfile))) {
-            journalDto.setProfile(profileService.get(idProfile));
+            journalDto.setProfile(profileService.findById(idProfile));
             journalService.save(journalDto);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
@@ -147,7 +147,7 @@ public class JournalController {
 
     private Boolean profileValidation(Long idProfile) {
         try {
-            return userHolder.getUser().getId() == profileService.get(idProfile).getUser().getId();
+            return userHolder.getUser().getId() == profileService.findById(idProfile).getUser().getId();
         } catch (IllegalArgumentException e) {
             return false;
         }

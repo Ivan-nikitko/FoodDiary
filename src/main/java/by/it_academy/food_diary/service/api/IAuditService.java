@@ -1,7 +1,13 @@
 package by.it_academy.food_diary.service.api;
 
+
 import by.it_academy.food_diary.models.Audit;
 
-public interface IAuditService extends IService<Audit,Long> {
+import java.util.List;
 
+public interface IAuditService  {
+    void save(Audit audit);
+    List<Audit> getAll();
+    List<Audit> getAll(Long id);
+    Audit get(Long id);
 }

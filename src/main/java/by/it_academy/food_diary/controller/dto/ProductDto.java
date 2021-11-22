@@ -6,7 +6,7 @@ import by.it_academy.food_diary.models.User;
 import java.time.LocalDateTime;
 
 public class ProductDto {
-
+    private Long id;
     private String name;
     private String brand;
     private double calories;
@@ -20,6 +20,14 @@ public class ProductDto {
 
     public String getName() {
         return name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {

@@ -37,10 +37,14 @@ public class AuthController {
     }
 
     @PostMapping("/auth")
-    public String auth(@RequestBody LoginDto loginDto) {
-        User userEntity = userService.findByLoginAndPassword(loginDto.getLogin(), loginDto.getPassword());
-        String token = jwtProvider.generateToken(userEntity.getLogin());
-        return token;
+    public ResponseEntity<?> auth(@RequestBody LoginDto loginDto) {
+        User user = userService.findByLoginAndPassword(loginDto.getLogin(), loginDto.getPassword());
+        if (user != null) {
+            String token = jwtProvider.generateToken(user.getLogin());
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/activate/{id}")

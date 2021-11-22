@@ -1,100 +1,78 @@
+
 package by.it_academy.food_diary.service.audit;
 
+import by.it_academy.food_diary.controller.dto.LoginDto;
+import by.it_academy.food_diary.controller.dto.UserDto;
 import by.it_academy.food_diary.models.Audit;
 import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IAuditService;
 import by.it_academy.food_diary.service.api.IUserService;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Service;
-/*
+
+import java.time.LocalDateTime;
 
 @Aspect
 @Service
 public class UserAuditService {
 
     private final IAuditService auditService;
-    private final UserHolder userHolder;
     private final IUserService userService;
+    private final UserHolder userHolder;
 
-    public UserAuditService(IAuditService auditService, UserHolder userHolder, IUserService userService) {
+    public UserAuditService(IAuditService auditService, IUserService userService, UserHolder userHolder) {
         this.auditService = auditService;
-        this.userHolder = userHolder;
         this.userService = userService;
+        this.userHolder = userHolder;
     }
 
-    @After("execution(* by.it_academy.food_diary.service.UserService.save(..))")
-    public void save(JoinPoint joinPoint){
+    @AfterReturning("execution(* by.it_academy.food_diary.service.UserService.save(..))")
+    public void save(JoinPoint joinPoint) {
+     createLoginAudit(joinPoint);
+    }
+
+    @AfterReturning("execution(* by.it_academy.food_diary.service.UserService.update(..))")
+    public void update(JoinPoint joinPoint) {
+       createUpdateAudit(joinPoint);
+    }
+
+    private void createLoginAudit(JoinPoint joinPoint) {
         try {
             Object[] args = joinPoint.getArgs();
-
-            User arg = (User) args[0];
-
+            LoginDto loginDto = (LoginDto) args[0];
             Audit audit = new Audit();
-            audit.setCreationDate(arg.getUpdateDate());
-            audit.setDescription("Creation user  " + arg.getId());
-            String login = userHolder.getAuthentication().getName();
-            User user = userService.findByLogin(login);
+            audit.setCreationDate(LocalDateTime.now());
+            User user = userService.findByLogin(loginDto.getLogin());
+            audit.setDescription("Create user " + user.getId());
             audit.setUser(user);
             audit.setEssenceName("User");
-            audit.setEssenceId(arg.getId());
+            audit.setEssenceId(user.getId());
             auditService.save(audit);
-
         } catch (Throwable e) {
-            //TODO throw new RuntimeException
-            e.printStackTrace();
+            throw new RuntimeException("error with audit");
         }
     }
 
-    @After("execution(* by.it_academy.food_diary.service.UserService.update(..))")
-    public void update(JoinPoint joinPoint){
+    private void createUpdateAudit(JoinPoint joinPoint) {
         try {
             Object[] args = joinPoint.getArgs();
-
-            User arg = (User) args[0];
-
+            UserDto userDto = (UserDto) args[0];
             Audit audit = new Audit();
-            audit.setCreationDate(arg.getUpdateDate());
-            audit.setDescription("Update user  " + arg.getId());
+            audit.setCreationDate(LocalDateTime.now());
+            audit.setDescription("Update user " + userDto.getId());
             String login = userHolder.getAuthentication().getName();
             User user = userService.findByLogin(login);
             audit.setUser(user);
             audit.setEssenceName("User");
-            audit.setEssenceId(arg.getId());
+            audit.setEssenceId(userDto.getId());
             auditService.save(audit);
-
         } catch (Throwable e) {
-            //TODO throw new RuntimeException
-            e.printStackTrace();
-        }
-    }
-
-    @After("execution(* by.it_academy.food_diary.service.UserService.delete(..))")
-    public void delete(JoinPoint joinPoint){
-        try {
-            Object[] args = joinPoint.getArgs();
-
-            User arg = (User) args[0];
-
-            Audit audit = new Audit();
-            audit.setCreationDate(arg.getUpdateDate());
-            audit.setDescription("Delete user  " + arg.getId());
-            String login = userHolder.getAuthentication().getName();
-            User user = userService.findByLogin(login);
-            audit.setUser(user);
-            audit.setEssenceName("User");
-            audit.setEssenceId(arg.getId());
-            auditService.save(audit);
-
-        } catch (Throwable e) {
-            //TODO throw new RuntimeException
-            e.printStackTrace();
+            throw new RuntimeException("error with audit");
         }
     }
 }
-*/
-
 
 

@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.OptimisticLockException;
-import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -20,6 +19,7 @@ public class RecipeService implements IRecipeService {
     private final IRecipeDao recipeDao;
     private final IIngredientDao ingredientDao;
     private final UserHolder userHolder;
+    private static final String RECIPE_NOT_FOUND = "Recipe not found";
 
     public RecipeService(IRecipeDao recipeDao, IIngredientDao ingredientDao, UserHolder userHolder) {
         this.recipeDao = recipeDao;
@@ -38,7 +38,8 @@ public class RecipeService implements IRecipeService {
             ingredientDao.save(ingredient);
         }
         recipe.setName(recipeDto.getName());
-        recipeDao.save(recipe);
+        Recipe savedRecipe = recipeDao.save(recipe);
+        recipeDto.setId(savedRecipe.getId());
     }
 
     @Override
@@ -53,7 +54,7 @@ public class RecipeService implements IRecipeService {
     @Override
     public Recipe get(Long id) {
         return recipeDao.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("Recipe not found")
+                () -> new IllegalArgumentException(RECIPE_NOT_FOUND)
         );
     }
 
@@ -61,7 +62,7 @@ public class RecipeService implements IRecipeService {
     public void update(RecipeDto recipeDto, Long id) {
         Recipe recipeToUpdate = get(id);
         if (recipeToUpdate == null) {
-            throw new IllegalArgumentException("Recipe not found");
+            throw new IllegalArgumentException(RECIPE_NOT_FOUND);
         }
         if (recipeDto.getUpdateDate().isEqual(recipeToUpdate.getUpdateDate())) {
             recipeToUpdate.setName(recipeDto.getName());
@@ -71,6 +72,7 @@ public class RecipeService implements IRecipeService {
             }
             recipeToUpdate.setIngredients(ingredients);
             recipeDao.saveAndFlush(recipeToUpdate);
+            recipeDto.setId(id);
         }else {
             throw new OptimisticLockException("Recipe has already been changed");
         }
@@ -80,10 +82,11 @@ public class RecipeService implements IRecipeService {
     public void delete(RecipeDto recipeDto,Long id) {
         Recipe dataBaseRecipe = get(id);
         if (dataBaseRecipe == null) {
-            throw new IllegalArgumentException("Recipe not found");
+            throw new IllegalArgumentException(RECIPE_NOT_FOUND);
         }
         if (recipeDto.getUpdateDate().isEqual(dataBaseRecipe.getUpdateDate())) {
             recipeDao.deleteById(id);
+            recipeDto.setId(id);
         }else {
             throw new OptimisticLockException("Recipe has already been changed");
         }

@@ -77,7 +77,7 @@ public class TrainingController {
     public ResponseEntity<?> save(@RequestBody TrainingDto trainingDto,
                                   @PathVariable("id_profile") Long idProfile) {
         if (Boolean.TRUE.equals(profileCheck(idProfile))) {
-            trainingDto.setProfile(profileService.get(idProfile));
+            trainingDto.setProfile(profileService.findById(idProfile));
             trainingService.save(trainingDto);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
@@ -93,7 +93,7 @@ public class TrainingController {
         try {
             if (Boolean.TRUE.equals(profileCheck(idProfile, idActive))) {
                 trainingDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
-                trainingDto.setProfile(profileService.get(idProfile));
+                trainingDto.setProfile(profileService.findById(idProfile));
                 trainingService.update(trainingDto, idActive);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -129,7 +129,7 @@ public class TrainingController {
     private Boolean profileCheck(Long idProfile, Long idActive) {
         try {
             long userHolderId = userHolder.getUser().getId();
-            long userProfileId = profileService.get(idProfile).getUser().getId();
+            long userProfileId = profileService.findById(idProfile).getUser().getId();
             Long trainingProfileId = trainingService.get(idActive).getProfile().getId();
             return userHolderId == userProfileId && Objects.equals(trainingProfileId, idProfile);
         } catch (IllegalArgumentException e) {
@@ -139,7 +139,7 @@ public class TrainingController {
 
     private Boolean profileCheck(Long idProfile) {
         try {
-            return userHolder.getUser().getId()==profileService.get(idProfile).getUser().getId();
+            return userHolder.getUser().getId()==profileService.findById(idProfile).getUser().getId();
         } catch (IllegalArgumentException e) {
             return false;
         }

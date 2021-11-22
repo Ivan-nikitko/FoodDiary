@@ -12,11 +12,21 @@ import java.util.List;
 
 public class WeightMeasurementDto {
 
+    private Long id;
+
     private double weight;
 
     private Profile profile;
 
     private LocalDateTime updateDate;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public double getWeight() {
         return weight;
