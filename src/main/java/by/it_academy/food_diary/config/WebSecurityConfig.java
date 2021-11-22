@@ -35,7 +35,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/api/recipe/**").hasAnyRole("ADMIN","USER")
                 .antMatchers(HttpMethod.PUT,"/api/recipe/**").hasAnyRole("ADMIN","USER")
                 .antMatchers(HttpMethod.DELETE,"/api/recipe/**").hasAnyRole("ADMIN","USER")
-                .antMatchers("/register", "/auth").anonymous()
+                .antMatchers("/register", "/auth","/activate/**").anonymous()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

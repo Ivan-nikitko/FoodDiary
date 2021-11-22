@@ -1,29 +1,27 @@
-package by.it_academy.food_diary.GmailServer.tls;
+package by.it_academy.food_diary.email;
+
+import org.springframework.stereotype.Component;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
+@Component
 public class MailSenderTLS {
 
-    private String username;
-    private String password;
-    private Properties props;
+    private  String username="ivan.nikitko.education@gmail.com";
+    private final String password="7658392**";
 
-    public MailSenderTLS(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public void send(String subject, String text, String toEmail){
 
-        props = new Properties();
+        Properties  props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-    }
 
-    public void send(String subject, String text, String toEmail){
         Session session = Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);

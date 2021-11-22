@@ -2,17 +2,22 @@ package by.it_academy.food_diary.service;
 
 
 import by.it_academy.food_diary.controller.dto.LoginDto;
+import by.it_academy.food_diary.controller.dto.ProductDto;
 import by.it_academy.food_diary.controller.dto.UserDto;
 import by.it_academy.food_diary.dao.api.IUserDao;
 import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.models.api.ERole;
 
+import by.it_academy.food_diary.models.api.EStatus;
 import by.it_academy.food_diary.service.api.IUserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.OptimisticLockException;
+import java.time.LocalDateTime;
 
 @Service
 public class UserService implements IUserService {
@@ -29,6 +34,7 @@ public class UserService implements IUserService {
         User user = new User();
         user.setLogin(loginDto.getLogin());
         user.setRole(ERole.ROLE_USER);
+        user.setStatus(EStatus.INACTIVE);
         user.setPassword(passwordEncoder.encode(loginDto.getPassword()));
         userDao.save(user);
     }
@@ -60,5 +66,11 @@ public class UserService implements IUserService {
         );
     }
 
+    public void activateUser(Long id){
+        User user = findById(id);
+        user.setStatus(EStatus.ACTIVE);
+        user.setUpdateDate(LocalDateTime.now());
+        userDao.saveAndFlush(user);
+    }
 
 }
