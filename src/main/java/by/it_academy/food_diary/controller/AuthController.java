@@ -25,11 +25,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody @Valid LoginDto loginDto) {
-        userService.save(loginDto);
-        long id = userService.findByLogin(loginDto.getLogin()).getId();
-        mailSenderTLS.send("Activate your account","http://localhost:8080/activate/"+id, loginDto.getLogin());
-        return "OK";
+    public ResponseEntity<String> registerUser(@RequestBody @Valid LoginDto loginDto) {
+        if (userService.findByLogin(loginDto.getLogin()) == null) {
+            userService.save(loginDto);
+            long id = userService.findByLogin(loginDto.getLogin()).getId();
+            mailSenderTLS.send("Activate your account", "http://localhost:8080/activate/" + id, loginDto.getLogin());
+            return new ResponseEntity<>("User created", HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("Login or password are incorrect", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/auth")
@@ -43,9 +47,9 @@ public class AuthController {
     public ResponseEntity<String> activate(@PathVariable("id") Long id) {
         try {
             userService.activateUser(id);
-            return new ResponseEntity<>("User activated",HttpStatus.OK);
-        }catch (IllegalArgumentException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User activated", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
 

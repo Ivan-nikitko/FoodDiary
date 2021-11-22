@@ -2,7 +2,7 @@ package by.it_academy.food_diary;
 
 public interface TODO {
 
-    //TODO add security
+
     //TODO exceptions
     //TODO business
     //TODO audit
