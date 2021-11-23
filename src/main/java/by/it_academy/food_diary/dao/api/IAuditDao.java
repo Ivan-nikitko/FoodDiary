@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface IAuditDao extends JpaRepository <Audit,Long>{
     List<Audit> findAllById(Long id);
+    List<Audit> findAllByUserId(Long id);
 }

@@ -1,7 +1,16 @@
 package by.it_academy.food_diary.controller.dto;
 
+import by.it_academy.food_diary.validation.annotation.ValidPassword;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 public class LoginDto {
+    @Email
+    @NotBlank(message = "Email is mandatory")
     private String login;
+    @ValidPassword
+    @NotBlank(message = "Password is mandatory")
     private String password;
 
     public String getLogin() {

@@ -25,14 +25,14 @@ public class AuditController {
         this.userHolder = userHolder;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public ResponseEntity<?> get() {
         User user = userHolder.getUser();
         List<Audit> audits;
         if (user.getRole().equals(ERole.ROLE_ADMIN)) {
             audits = this.auditService.getAll();
         } else {
-            audits = auditService.getAll(user.getId());
+            audits = auditService.getAllByUserId(user.getId());
         }
         return new ResponseEntity<>(audits, HttpStatus.OK);
     }

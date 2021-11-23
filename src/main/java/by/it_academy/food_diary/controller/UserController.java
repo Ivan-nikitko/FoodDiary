@@ -49,7 +49,7 @@ public class UserController {
 
 	@GetMapping
 	public ResponseEntity<?> getAll(@RequestParam(value = "page", defaultValue = "0") int page,
-									@RequestParam(value = "size", defaultValue = "2") int size){
+									@RequestParam(value = "size", defaultValue = "5") int size){
 		Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
 		Page<User> users = userService.getAll(pageable);
 		return new ResponseEntity<>(users, HttpStatus.OK);

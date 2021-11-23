@@ -22,14 +22,13 @@ public class AuditService implements IAuditService {
         auditDao.save(audit);
     }
 
-    @Override
     public List<Audit> getAll() {
         return auditDao.findAll();
     }
 
 
-    public List<Audit> getAll(Long id) {
-        return auditDao.findAllById(id);
+    public List<Audit> getAllByUserId(Long id) {
+        return auditDao.findAllByUserId(id) ;
     }
 
     @Override

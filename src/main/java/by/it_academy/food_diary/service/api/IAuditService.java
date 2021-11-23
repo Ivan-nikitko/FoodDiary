@@ -8,6 +8,6 @@ import java.util.List;
 public interface IAuditService  {
     void save(Audit audit);
     List<Audit> getAll();
-    List<Audit> getAll(Long id);
+    List<Audit> getAllByUserId(Long id);
     Audit get(Long id);
 }
