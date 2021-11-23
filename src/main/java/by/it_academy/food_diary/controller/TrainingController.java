@@ -4,6 +4,8 @@ package by.it_academy.food_diary.controller;
 import by.it_academy.food_diary.controller.dto.TrainingByDateDto;
 import by.it_academy.food_diary.controller.dto.TrainingDto;
 import by.it_academy.food_diary.models.Training;
+import by.it_academy.food_diary.models.User;
+import by.it_academy.food_diary.models.api.ERole;
 import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IProfileService;
 import by.it_academy.food_diary.service.api.ITrainingService;
@@ -128,6 +130,10 @@ public class TrainingController {
 
     private Boolean profileCheck(Long idProfile, Long idActive) {
         try {
+            User currentUser = userHolder.getUser();
+            if (currentUser.getRole().equals(ERole.ROLE_ADMIN)) {
+                return true;
+            }
             long userHolderId = userHolder.getUser().getId();
             long userProfileId = profileService.findById(idProfile).getUser().getId();
             Long trainingProfileId = trainingService.get(idActive).getProfile().getId();
@@ -139,6 +145,10 @@ public class TrainingController {
 
     private Boolean profileCheck(Long idProfile) {
         try {
+            User currentUser = userHolder.getUser();
+            if (currentUser.getRole().equals(ERole.ROLE_ADMIN)) {
+                return true;
+            }
             return userHolder.getUser().getId()==profileService.findById(idProfile).getUser().getId();
         } catch (IllegalArgumentException e) {
             return false;

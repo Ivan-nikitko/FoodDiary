@@ -5,6 +5,7 @@ import by.it_academy.food_diary.controller.dto.JournalDto;
 import by.it_academy.food_diary.models.Journal;
 import by.it_academy.food_diary.models.Profile;
 import by.it_academy.food_diary.models.User;
+import by.it_academy.food_diary.models.api.ERole;
 import by.it_academy.food_diary.security.UserHolder;
 import by.it_academy.food_diary.service.api.IJournalService;
 import by.it_academy.food_diary.service.api.IProfileService;
@@ -147,7 +148,11 @@ public class JournalController {
 
     private Boolean profileValidation(Long idProfile) {
         try {
-            return userHolder.getUser().getId() == profileService.findById(idProfile).getUser().getId();
+            User currentUser = userHolder.getUser();
+            if (currentUser.getRole().equals(ERole.ROLE_ADMIN)) {
+                return true;
+            }
+            return currentUser.getId() == profileService.findById(idProfile).getUser().getId();
         } catch (IllegalArgumentException e) {
             return false;
         }
