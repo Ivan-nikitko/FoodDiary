@@ -52,6 +52,9 @@ public class JournalService implements IJournalService {
     public JournalByDateDto findAllByProfileIdAndCreationDate(LocalDateTime start, LocalDateTime end, Long id) {
         JournalByDateDto journalByDateDto = new JournalByDateDto();
         List<Journal> journalList = new ArrayList<>();
+        double sumOfProteins = 0;
+        double sumOfFats = 0;
+        double sumOfCarbonates = 0;
         double sumOfCalories = 0;
         List<Journal> journals = journalDao.findAllByCreationDateBetweenAndProfileId(start, end, id);
         for (Journal journal : journals) {
@@ -60,28 +63,51 @@ public class JournalService implements IJournalService {
             Recipe recipe = journal.getRecipe();
             Product product = journal.getProduct();
             if (product != null) {
-                double productCalories = product.getCalories();
                 double productMeasure = product.getMeasure();
-                double calories = productCalories * measure / productMeasure;
+                double proteins = product.getProtein() * measure / productMeasure;
+                double fats = product.getFats() * measure / productMeasure;
+                double carbonates = product.getCarbonates() * measure / productMeasure;
+                double calories = product.getCalories() * measure / productMeasure;
+                sumOfProteins+=proteins;
+                sumOfFats+=fats;
+                sumOfCarbonates+=carbonates;
                 sumOfCalories += calories;
             }
             if (recipe != null) {
                 double recipeMeasure = 0;
+                double recipeProteins=0;
+                double recipeFats=0;
+                double recipeCarbonates=0;
                 double recipeCalories = 0;
                 List<Ingredient> ingredients = recipe.getIngredients();
                 for (Ingredient ingredient : ingredients) {
-                    Product componentProduct = ingredient.getProduct();
-                    double componentProductCalories = componentProduct.getCalories();
-                    double componentProductMeasure = componentProduct.getMeasure();
-                    Double componentMeasure = ingredient.getMeasure();
-                    recipeMeasure += componentMeasure;
-                    recipeCalories += componentProductCalories * componentMeasure / componentProductMeasure;
+                    Product ingredientProduct = ingredient.getProduct();
+                    double ingredientProductProtein = ingredientProduct.getProtein();
+                    double ingredientProductFats = ingredientProduct.getFats();
+                    double ingredientProductCarbonates = ingredientProduct.getCarbonates();
+                    double ingredientProductCalories = ingredientProduct.getCalories();
+                    double ingredientProductMeasure = ingredientProduct.getMeasure();
+                    Double ingredientMeasure = ingredient.getMeasure();
+                    recipeMeasure += ingredientMeasure;
+                    recipeProteins += ingredientProductProtein * ingredientMeasure / ingredientProductMeasure;
+                    recipeFats += ingredientProductFats * ingredientMeasure / ingredientProductMeasure;
+                    recipeCarbonates += ingredientProductCarbonates * ingredientMeasure / ingredientProductMeasure;
+                    recipeCalories += ingredientProductCalories * ingredientMeasure / ingredientProductMeasure;
+                    double proteins = recipeProteins * measure / recipeMeasure;
+                    double fats = recipeFats * measure / recipeMeasure;
+                    double carbonates = recipeCarbonates * measure / recipeMeasure;
                     double calories = recipeCalories * measure / recipeMeasure;
+                    sumOfProteins+=proteins;
+                    sumOfFats+=fats;
+                    sumOfCarbonates+=carbonates;
                     sumOfCalories += calories;
                 }
             }
         }
         journalByDateDto.setJournals(journalList);
+        journalByDateDto.setSumOfProteins(sumOfProteins);
+        journalByDateDto.setSumOfFats(sumOfFats);
+        journalByDateDto.setSumOfCarbonates(sumOfCarbonates);
         journalByDateDto.setSumOfCalories(sumOfCalories);
         return journalByDateDto;
     }
