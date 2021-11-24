@@ -1,5 +1,7 @@
 package by.it_academy.food_diary.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -10,9 +12,10 @@ public class Training {
     private Long id;
     private String name;
     private double calories;
+    @JsonIgnore
     @OneToOne
     private Profile profile;
-
+    @JsonIgnore
     @OneToOne
     private User userCreator;
     private LocalDateTime creationDate;

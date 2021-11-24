@@ -4,30 +4,23 @@ import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.models.api.EActivity;
 import by.it_academy.food_diary.models.api.EPurpose;
 import by.it_academy.food_diary.models.api.ESex;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class ProfileDto {
 
-    private Long id;
+
     private User user;
     private double height;
     private double weight;
     private ESex sex;
     private EActivity activity;
     private EPurpose purpose;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate dateOfBirth;
-    private User userCreator;
-    private LocalDateTime creationDate;
     private LocalDateTime updateDate;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public User getUser() {
         return user;
@@ -83,22 +76,6 @@ public class ProfileDto {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-    }
-
-    public User getUserCreator() {
-        return userCreator;
-    }
-
-    public void setUserCreator(User userCreator) {
-        this.userCreator = userCreator;
-    }
-
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
     }
 
     public LocalDateTime getUpdateDate() {

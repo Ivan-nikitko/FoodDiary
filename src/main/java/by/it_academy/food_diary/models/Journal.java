@@ -1,6 +1,7 @@
 package by.it_academy.food_diary.models;
 
 import by.it_academy.food_diary.models.api.EMealTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ public class Journal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @JsonIgnore
     @OneToOne
     private Profile profile;
     @OneToOne

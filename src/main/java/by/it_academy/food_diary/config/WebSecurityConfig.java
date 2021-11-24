@@ -16,7 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final JwtFilter jwtFilter ;
+    private final JwtFilter jwtFilter;
+
 
     WebSecurityConfig(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
@@ -24,19 +25,27 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        final String API_PRODUCT_PATH = "/api/product/**";
+        final String API_RECIPE_PATH = "/api/recipe/**";
+        final String API_PROFILE_PATH = "/api/profile/**";
+        final String API_USER_PATH = "/api/user/**";
+        final String ADMIN = "ADMIN";
+        final String USER = "USER";
+
         http
                 .httpBasic().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET,"/api/product/**","/api/recipe/**","/api/profile/**").hasAnyRole("ADMIN","USER")
-                .antMatchers(HttpMethod.POST,"/api/product/**").hasRole("ADMIN")
-                .antMatchers("/api/user/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT,"/api/product/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE,"/api/product/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST,"/api/recipe/**").hasAnyRole("ADMIN","USER")
-                .antMatchers(HttpMethod.PUT,"/api/recipe/**","/api/user/**").hasAnyRole("ADMIN","USER")
-                .antMatchers(HttpMethod.DELETE,"/api/recipe/**").hasAnyRole("ADMIN","USER")
-                .antMatchers("/register", "/auth","/activate/**").anonymous()
+                .antMatchers(HttpMethod.GET, API_PRODUCT_PATH, API_RECIPE_PATH, API_PROFILE_PATH).hasAnyRole(ADMIN, USER)
+                .antMatchers(HttpMethod.POST, API_PRODUCT_PATH).hasRole(ADMIN)
+                .antMatchers(API_USER_PATH).hasRole(ADMIN)
+                .antMatchers(HttpMethod.PUT, API_PRODUCT_PATH).hasRole(ADMIN)
+                .antMatchers(HttpMethod.DELETE, API_PRODUCT_PATH).hasRole(ADMIN)
+                .antMatchers(HttpMethod.POST, API_RECIPE_PATH).hasAnyRole(ADMIN, USER)
+                .antMatchers(HttpMethod.PUT, API_RECIPE_PATH, API_USER_PATH).hasAnyRole(ADMIN, USER)
+                .antMatchers(HttpMethod.DELETE, API_RECIPE_PATH).hasAnyRole(ADMIN, USER)
+                .antMatchers("/register", "/auth", "/activate/**").anonymous()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

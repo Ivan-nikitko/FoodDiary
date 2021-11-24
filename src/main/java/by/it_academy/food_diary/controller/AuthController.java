@@ -36,18 +36,18 @@ public class AuthController {
             mailSenderTLS.send("Activate your account", "http://localhost:8080/activate/" + id, loginDto.getLogin());
             return new ResponseEntity<>("User created", HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>("Login or password are incorrect", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Login is already exist", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<?> auth(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> auth(@RequestBody  LoginDto loginDto) {
         User user = userService.findByLoginAndPassword(loginDto.getLogin(), loginDto.getPassword());
         if (user != null) {
             String token = jwtProvider.generateToken(user.getLogin());
             return new ResponseEntity<>(token, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User or password are incorrect", HttpStatus.UNAUTHORIZED);
         }
     }
 

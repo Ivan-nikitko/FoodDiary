@@ -2,6 +2,7 @@ package by.it_academy.food_diary.controller;
 
 import by.it_academy.food_diary.controller.dto.WeightMeasurementByDateDto;
 import by.it_academy.food_diary.controller.dto.WeightMeasurementDto;
+import by.it_academy.food_diary.controller.validation.ProfileValidator;
 import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.models.WeightMeasurement;
 import by.it_academy.food_diary.models.api.ERole;
@@ -27,12 +28,14 @@ public class WeightMeasurementController {
     private final IProfileService profileService;
     private final TimeUtil timeUtil;
     private final UserHolder userHolder;
+    private final ProfileValidator profileValidator;
 
-    public WeightMeasurementController(IWeightMeasurementService weightMeasurementService, IProfileService profileService, TimeUtil timeUtil, UserHolder userHolder) {
+    public WeightMeasurementController(IWeightMeasurementService weightMeasurementService, IProfileService profileService, TimeUtil timeUtil, UserHolder userHolder, ProfileValidator profileValidator) {
         this.weightMeasurementService = weightMeasurementService;
         this.profileService = profileService;
         this.timeUtil = timeUtil;
         this.userHolder = userHolder;
+        this.profileValidator = profileValidator;
     }
 
     @GetMapping("/{id_profile}/journal/weight/")
@@ -42,7 +45,7 @@ public class WeightMeasurementController {
                                   @RequestParam(value = "dt_start") Long dateStartMicroseconds,
                                   @RequestParam(value = "dt_end") Long dateEndMicroseconds
     ) {
-        if (Boolean.TRUE.equals(profileCheck(idProfile))) {
+        if (profileValidator.profileCheck(idProfile)) {
             try {
                 Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
                 LocalDateTime startOfDate = timeUtil.microsecondsToLocalDateTime(dateStartMicroseconds);
@@ -78,7 +81,7 @@ public class WeightMeasurementController {
     @PostMapping("/{id_profile}/journal/weight")
     public ResponseEntity<?> save(@RequestBody WeightMeasurementDto weightMeasurementDto,
                                   @PathVariable("id_profile") Long idProfile) {
-        if (Boolean.TRUE.equals(profileCheck(idProfile))) {
+        if (profileValidator.profileCheck(idProfile)) {
             weightMeasurementDto.setProfile(profileService.findById(idProfile));
             weightMeasurementService.save(weightMeasurementDto);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -139,19 +142,6 @@ public class WeightMeasurementController {
             long userProfileId = profileService.findById(idProfile).getUser().getId();
             Long trainingProfileId = weightMeasurementService.get(idActive).getProfile().getId();
             return userHolderId == userProfileId && Objects.equals(trainingProfileId, idProfile);
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-
-    private Boolean profileCheck(Long idProfile) {
-        try {
-            User currentUser = userHolder.getUser();
-            if (currentUser.getRole().equals(ERole.ROLE_ADMIN)) {
-                return true;
-            }
-            return userHolder.getUser().getId() == profileService.findById(idProfile).getUser().getId();
         } catch (IllegalArgumentException e) {
             return false;
         }

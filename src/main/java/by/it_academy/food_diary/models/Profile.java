@@ -4,6 +4,7 @@ import by.it_academy.food_diary.models.api.EActivity;
 import by.it_academy.food_diary.models.api.EPurpose;
 import by.it_academy.food_diary.models.api.ESex;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @JsonIgnore
     @OneToOne
     private User user;
     @Column
@@ -30,6 +32,7 @@ public class Profile {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate dateOfBirth;
 
+    @JsonIgnore
     @OneToOne
     private User userCreator;
     @Column

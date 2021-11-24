@@ -4,14 +4,16 @@ package by.it_academy.food_diary.service.api;
 import by.it_academy.food_diary.controller.dto.ProfileDto;
 import by.it_academy.food_diary.models.Profile;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+
+import java.util.List;
 
 public interface IProfileService  {
 
 
     void save(ProfileDto profileDto);
-    Page<Profile> getAll (Pageable pageable);
+    List<Profile> getAll ();
     Profile findById (Long id);
+    List<Profile> getAllByUserId(Long id);
     void update(ProfileDto profileDto, Long id);
 }

@@ -1,11 +1,11 @@
-package by.it_academy.food_diary.validation;
+package by.it_academy.food_diary.controller.dto.validation;
 
 import java.util.Arrays;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import by.it_academy.food_diary.validation.annotation.ValidPassword;
+import by.it_academy.food_diary.controller.dto.validation.annotation.ValidPassword;
 import org.passay.AlphabeticalSequenceRule;
 import org.passay.DigitCharacterRule;
 import org.passay.LengthRule;
@@ -29,7 +29,6 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     @Override
     public boolean isValid(final String password, final ConstraintValidatorContext context) {
-        // @formatter:off
         final PasswordValidator validator = new PasswordValidator(Arrays.asList(
             new LengthRule(8, 30), 
             new UppercaseCharacterRule(1), 

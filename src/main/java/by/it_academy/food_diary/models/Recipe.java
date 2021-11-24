@@ -1,5 +1,7 @@
 package by.it_academy.food_diary.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,9 +14,11 @@ public class Recipe {
     private Long id;
     @Column
     private String name;
+    @JsonIgnore
     @OneToMany
     private List<Ingredient> ingredients;
 
+    @JsonIgnore
     @OneToOne
     private User userCreator;
     @Column

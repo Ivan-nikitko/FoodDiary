@@ -2,8 +2,8 @@ package by.it_academy.food_diary.controller;
 
 import by.it_academy.food_diary.controller.dto.JournalByDateDto;
 import by.it_academy.food_diary.controller.dto.JournalDto;
+import by.it_academy.food_diary.controller.validation.ProfileValidator;
 import by.it_academy.food_diary.models.Journal;
-import by.it_academy.food_diary.models.Profile;
 import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.models.api.ERole;
 import by.it_academy.food_diary.security.UserHolder;
@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoField;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 
@@ -35,12 +36,14 @@ public class JournalController {
     private final IProfileService profileService;
     private final UserHolder userHolder;
     private final TimeUtil timeUtil;
+    private final ProfileValidator profileValidator;
 
-    public JournalController(IJournalService journalService, IProfileService profileService, UserHolder userHolder, TimeUtil timeUtil) {
+    public JournalController(IJournalService journalService, IProfileService profileService, UserHolder userHolder, TimeUtil timeUtil, ProfileValidator profileValidator) {
         this.journalService = journalService;
         this.profileService = profileService;
         this.userHolder = userHolder;
         this.timeUtil = timeUtil;
+        this.profileValidator = profileValidator;
     }
 
     @GetMapping("/{id_profile}/journal/food/")
@@ -49,7 +52,7 @@ public class JournalController {
                                    @RequestParam(value = "size", defaultValue = "2") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         try {
-            if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+            if (profileValidator.profileCheck(idProfile)) {
                 Page<Journal> journals = journalService.getAllByProfileId(pageable, idProfile);
                 return new ResponseEntity<>(journals, HttpStatus.OK);
             } else {
@@ -63,7 +66,7 @@ public class JournalController {
     @GetMapping("/{id_profile}/journal/food/{id_food}")
     public ResponseEntity<?> show(@PathVariable("id_profile") Long idProfile,
                                   @PathVariable("id_food") Long idFood) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+        if (profileValidator.profileCheck(idProfile)) {
             try {
                 Journal journal = journalService.get(idFood);
                 return new ResponseEntity<>(journal, HttpStatus.OK);
@@ -79,7 +82,7 @@ public class JournalController {
     public ResponseEntity<?> showDay(@PathVariable("id_profile") Long idProfile,
                                      @PathVariable("day") Long day) {
 
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+        if (profileValidator.profileCheck(idProfile)) {
 
             long dayInMilliseconds = TimeUnit.DAYS.toMillis(day);
             LocalDateTime date =
@@ -97,12 +100,16 @@ public class JournalController {
     @PostMapping("/{id_profile}/journal/food")
     public ResponseEntity<?> save(@RequestBody JournalDto journalDto,
                                   @PathVariable("id_profile") Long idProfile) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
-            journalDto.setProfile(profileService.findById(idProfile));
-            journalService.save(journalDto);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        try {
+            if (profileValidator.profileCheck(idProfile)) {
+                journalDto.setProfile(profileService.findById(idProfile));
+                journalService.save(journalDto);
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -111,7 +118,7 @@ public class JournalController {
                                     @PathVariable("id_profile") Long idProfile,
                                     @PathVariable("id_food") Long idFood,
                                     @PathVariable("dt_update") Long dtUpdate) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+        if (Boolean.TRUE.equals(profileCheck(idProfile,idFood))) {
             try {
                 journalDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
                 journalService.update(journalDto, idFood);
@@ -131,7 +138,7 @@ public class JournalController {
                                     @PathVariable("id_profile") Long idProfile,
                                     @PathVariable("id_food") Long idFood,
                                     @PathVariable("dt_update") Long dtUpdate) {
-        if (Boolean.TRUE.equals(profileValidation(idProfile))) {
+        if (Boolean.TRUE.equals(profileCheck(idProfile,idFood))) {
             try {
                 journalDto.setUpdateDate(timeUtil.microsecondsToLocalDateTime(dtUpdate));
                 journalService.delete(journalDto, idFood);
@@ -146,13 +153,17 @@ public class JournalController {
         }
     }
 
-    private Boolean profileValidation(Long idProfile) {
+
+    private Boolean profileCheck(Long idProfile, Long idFood) {
         try {
             User currentUser = userHolder.getUser();
             if (currentUser.getRole().equals(ERole.ROLE_ADMIN)) {
                 return true;
             }
-            return currentUser.getId() == profileService.findById(idProfile).getUser().getId();
+            long userHolderId = currentUser.getId();
+            long userProfileId = profileService.findById(idProfile).getUser().getId();
+            Long journalProfileId = journalService.get(idFood).getProfile().getId();
+            return userHolderId == userProfileId && Objects.equals(journalProfileId, idProfile);
         } catch (IllegalArgumentException e) {
             return false;
         }

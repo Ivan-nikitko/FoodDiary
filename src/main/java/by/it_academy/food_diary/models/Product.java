@@ -1,5 +1,8 @@
 package by.it_academy.food_diary.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -25,6 +28,7 @@ public class Product {
     @Column
     private double measure;
 
+    @JsonIgnore
     @OneToOne
     private User userCreator;
     @Column

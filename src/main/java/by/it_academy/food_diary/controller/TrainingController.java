@@ -3,6 +3,7 @@ package by.it_academy.food_diary.controller;
 
 import by.it_academy.food_diary.controller.dto.TrainingByDateDto;
 import by.it_academy.food_diary.controller.dto.TrainingDto;
+import by.it_academy.food_diary.controller.validation.ProfileValidator;
 import by.it_academy.food_diary.models.Training;
 import by.it_academy.food_diary.models.User;
 import by.it_academy.food_diary.models.api.ERole;
@@ -29,12 +30,14 @@ public class TrainingController {
     private final IProfileService profileService;
     private final TimeUtil timeUtil;
     private final UserHolder userHolder;
+    private final ProfileValidator profileValidator;
 
-    public TrainingController(ITrainingService trainingService, IProfileService profileService, TimeUtil timeUtil, UserHolder userHolder) {
+    public TrainingController(ITrainingService trainingService, IProfileService profileService, TimeUtil timeUtil, UserHolder userHolder, ProfileValidator profileValidator) {
         this.trainingService = trainingService;
         this.profileService = profileService;
         this.timeUtil = timeUtil;
         this.userHolder = userHolder;
+        this.profileValidator = profileValidator;
     }
 
     @GetMapping("/{id_profile}/journal/active/")
@@ -44,7 +47,7 @@ public class TrainingController {
                                   @RequestParam(value = "dt_start") Long dateStartMicroseconds,
                                   @RequestParam(value = "dt_end") Long dateEndMicroseconds) {
 
-        if (Boolean.TRUE.equals(profileCheck(idProfile))) {
+        if (profileValidator.profileCheck(idProfile)) {
             try {
                 Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
                 LocalDateTime startOfDate = timeUtil.microsecondsToLocalDateTime(dateStartMicroseconds);
@@ -78,12 +81,18 @@ public class TrainingController {
     @PostMapping("/{id_profile}/journal/active")
     public ResponseEntity<?> save(@RequestBody TrainingDto trainingDto,
                                   @PathVariable("id_profile") Long idProfile) {
-        if (Boolean.TRUE.equals(profileCheck(idProfile))) {
-            trainingDto.setProfile(profileService.findById(idProfile));
-            trainingService.save(trainingDto);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        try {
+
+
+            if (profileValidator.profileCheck(idProfile)) {
+                trainingDto.setProfile(profileService.findById(idProfile));
+                trainingService.save(trainingDto);
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
     }
 
@@ -143,16 +152,5 @@ public class TrainingController {
         }
     }
 
-    private Boolean profileCheck(Long idProfile) {
-        try {
-            User currentUser = userHolder.getUser();
-            if (currentUser.getRole().equals(ERole.ROLE_ADMIN)) {
-                return true;
-            }
-            return userHolder.getUser().getId()==profileService.findById(idProfile).getUser().getId();
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
-    }
 
 }

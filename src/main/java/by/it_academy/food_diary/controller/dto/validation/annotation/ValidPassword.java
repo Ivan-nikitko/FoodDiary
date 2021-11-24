@@ -1,6 +1,6 @@
-package by.it_academy.food_diary.validation.annotation;
+package by.it_academy.food_diary.controller.dto.validation.annotation;
 
-import by.it_academy.food_diary.validation.PasswordConstraintValidator;
+import by.it_academy.food_diary.controller.dto.validation.PasswordConstraintValidator;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;

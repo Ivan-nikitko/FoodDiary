@@ -3,8 +3,8 @@ package by.it_academy.food_diary.controller;
 import by.it_academy.food_diary.controller.dto.ProductDto;
 import by.it_academy.food_diary.models.Product;
 import by.it_academy.food_diary.service.ProductService;
-import by.it_academy.food_diary.service.api.IProductService;
 import by.it_academy.food_diary.utils.TimeUtil;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +22,12 @@ public class ProductsController {
 
     private final ProductService productService;
     private final TimeUtil timeUtil;
+    private final ModelMapper modelMapper;
 
-    public ProductsController(ProductService productService, TimeUtil timeUtil) {
+    public ProductsController(ProductService productService, TimeUtil timeUtil, ModelMapper modelMapper) {
         this.productService = productService;
         this.timeUtil = timeUtil;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
