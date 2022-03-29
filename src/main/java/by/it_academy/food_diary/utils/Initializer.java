@@ -72,10 +72,8 @@ public class Initializer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //разбираем первый лист входного файла на объектную модель
         Sheet sheet = workBook.getSheetAt(0);
         Iterator<Row> it = sheet.iterator();
-        //проходим по всему листу
         while (it.hasNext()) {
             Product product = new Product();
             Row row = it.next();
